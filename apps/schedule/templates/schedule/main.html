@@ -1,0 +1,6 @@
+{% if test %}
+    <p>{{ test }}</p>
+    <a href="{% url 'index' %}">link</a>
+{% else %}
+    <p>No request</p>
+{% endif %}
