@@ -1,6 +1,43 @@
-{% if test %}
-    <p>{{ test }}</p>
-    <a href="{% url 'index' %}">link</a>
-{% else %}
-    <p>No request</p>
-{% endif %}
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            {% for w in week_names %}
+                <th>{{ w }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for week in month_days %}
+            <tr>
+                {% for day in week %}
+                    {% if now == day %}
+                        <td class="table-success">
+                            {% else %}
+                        <td>
+                    {% endif %}
+
+                {% if month_current.month != day.month %}
+                    {{ day | date:"m/d" }}
+                {% else %}
+                    {{ day.day }}
+                {% endif %}
+
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+
+        {% if test %}
+            <p>{{ test }}</p>
+            <a href="{% url 'index' %}">link</a>
+        {% else %}
+            <p>No request</p>
+        {% endif %}
+        </tbody>
+    </table>
+{% endblock %}
