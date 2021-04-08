@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div>
+    <h2>予約申請</h2>
+</div>
+<br>
+<a href="{% url 'calender' %}">calender</a>
+<a href="{% url 'index' %}">index</a>
+<br>
+<div>
+    現在の時刻：{{ current_time }}
+</div>
+<br>
+<div>
+    <table class="table col-1">
+        <thead>
+        <tr class="col-1">
+            <th>10:00</th>
+            <th>10:15</th>
+            <th>10:30</th>
+            <th>10:45</th>
+            <th>11:00</th>
+            <th>11:15</th>
+            <th>11:30</th>
+            <th>11:45</th>
+            <th>12:00</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            <td>
+                <select id="1" name="1">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="2" name="2">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="3" name="3">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="4" name="4">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="5" name="5">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="6" name="6">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="7" name="7">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="8" name="8">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+            <td>
+                <select id="9" name="9">
+                    <option value=6>予約不可</option>
+                    <option value=7>予約申請する</option>
+                    <option value=0 selected>空き</option>
+                </select>
+            </td>
+        </tr>
+        </tbody>
+
+        <thead>
+        <tr class="col-1">
+            <th>12:15</th>
+            <th>12:30</th>
+            <th>13:45</th>
+            <th>13:00</th>
+            <th>13:15</th>
+            <th>13:30</th>
+            <th>13:45</th>
+            <th>14:00</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+        </tr>
+        </tbody>
+
+        <thead>
+        <tr class="col-1">
+            <th>14:15</th>
+            <th>14:30</th>
+            <th>14:45</th>
+            <th>15:00</th>
+            <th>15:15</th>
+            <th>15:30</th>
+            <th>15:45</th>
+            <th>16:00</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+            <td>空き</td>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+<br>
+<div>
+    <form action="/sent/" method="GET" >
+        <button onclic="location.href"="/sent/">予約申請する</button>
+    </form>
+</div>
+<br>
+<div>
+     <form action="/calender/" method="GET" >
+        <button onclic="location.href"="/calender/">カレンダーに戻る</button>
+    </form>
+</div>
+
+
+
+
+{% endblock %}

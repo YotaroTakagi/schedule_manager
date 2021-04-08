@@ -38,3 +38,111 @@ class Schedule(models.Model):
 
     def __str__(self):
         return self.summary
+
+
+
+from django.shortcuts import render
+from django.views import View
+from django.http import HttpResponse
+from burn_out.function.burn import pred, pred_cluster
+import numpy as np
+
+class Burn(View):
+    def htmlIndex(request):
+        content = {
+            "message": "TEST"
+        }
+        return render(request, "burn_out/index.html", content)
+
+    def get(self, request):
+        content = {
+            "message": "現在の状態を選択してください"
+        }
+        return render(request, "burn_out/index.html", content)
+
+    def post(self, request):
+        if request.POST["gender"] == "0":
+            selected_gender = "男"
+        elif request.POST["gender"] == "1":
+            selected_gender = "女"
+        else:
+            selected_gender = "選択してください"
+
+        if request.POST["company"] == "0":
+            selected_company = "営業"
+        elif request.POST["company"] == "1":
+            selected_company = "技術"
+        elif request.POST["company"] == "2":
+            selected_company = "その他"
+        else:
+            selected_company = "選択してください"
+
+        if request.POST["wfh"] == "0":
+            selected_wfh = "ない"
+        elif request.POST["wfh"] == "1":
+            selected_wfh = "ある"
+        else:
+            selected_wfh = "選択してください"
+
+        if request.POST["resource"] == "0":
+            selected_resource = "ほぼない"
+        elif request.POST["resource"] == "1":
+            selected_resource = "少ない"
+        elif request.POST["resource"] == "2":
+            selected_resource = "適量"
+        elif request.POST["resource"] == "3":
+            selected_resource = "少し多い"
+        elif request.POST["resource"] == "4":
+            selected_resource = "かなり多い"
+        elif request.POST["mental"] == "5":
+            selected_resource = "限界手前"
+        elif request.POST["mental"] == "6":
+            selected_resource = "限界超え"
+        else:
+            selected_resource = "選択してください"
+
+        if request.POST["design"] == "0":
+            selected_design = "適度"
+        elif request.POST["design"] == "1":
+            selected_design = "少し重い"
+        elif request.POST["design"] == "2":
+            selected_design = "かなり重い"
+        else:
+            selected_design = "選択してください"
+
+        if request.POST["mental"] == "0":
+            selected_mental = "とても元気"
+        elif request.POST["mental"] == "1":
+            selected_mental = "まあまあ元気"
+        elif request.POST["mental"] == "2":
+            selected_mental = "普通"
+        elif request.POST["mental"] == "3":
+            selected_mental = "少し辛い"
+        elif request.POST["mental"] == "4":
+            selected_mental = "かなり辛い"
+        elif request.POST["mental"] == "5":
+            selected_mental = "限界手前"
+        elif request.POST["mental"] == "6":
+            selected_mental = "限界超え"
+        else:
+            selected_mental = "選択してください"
+
+        content = {
+            "gender": request.POST["gender"],
+            "company": request.POST["company"],
+            "wfh": request.POST["wfh"],
+            "resource": request.POST["resource"],
+            "design": request.POST["design"],
+            "mental": request.POST["mental"],
+            "selected_gender": selected_gender,
+            "selected_company": selected_company,
+            "selected_wfh": selected_wfh,
+            "selected_resource": selected_resource,
+            "selected_design": selected_design,
+            "selected_mental": selected_mental,
+            "message": pred_cluster([[request.POST["gender"], request.POST["company"], request.POST["wfh"],request.POST["resource"], request.POST["design"], request.POST["mental"]]])
+        }
+
+        return render(request, "burn_out/index.html", content)
+
+burn = Burn.as_view()

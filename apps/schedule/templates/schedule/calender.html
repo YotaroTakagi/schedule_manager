@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div>
+    <p>テストカレンダ</p>
+    <a href="{% url 'month' %}">month</a>
+    <a href="{% url 'main' %}">main</a>
+    <a href="{% url 'index' %}">index</a>
+    <a href="{% url 'reservation' %}">reservation</a>
+</div>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>月</th>
+        <th>火</th>
+        <th>水</th>
+        <th>木</th>
+        <th>金</th>
+        <th>土</th>
+        <th>日</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <form action="/reservation/" method="GET" >
+                    <button onclic="location.href"="/reservation/">1</button>
+                </form>
+            </td>
+            <td>
+                <form action="/reservation/" method="GET" >
+                    <button onclic="location.href"="/reservation/">2</button>
+                </form>
+            </td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>9</td>
+            <td>10</td>
+            <td>11</td>
+            <td>12</td>
+            <td>13</td>
+            <td>14</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>16</td>
+            <td>17</td>
+            <td>18</td>
+            <td>19</td>
+            <td>20</td>
+            <td>21</td>
+        </tr>
+        <tr>
+            <td>22</td>
+            <td>23</td>
+            <td>24</td>
+            <td>25</td>
+            <td>26</td>
+            <td>27</td>
+            <td>28</td>
+        </tr>
+    </tbody>
+
+</table>
+
+
+{% endblock %}

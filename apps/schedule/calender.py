@@ -1,6 +1,8 @@
 import calendar
 from collections import deque
 import datetime
+import pandas as pd
+import matplotlib.pyplot as plt
 from django.utils import timezone
 
 class BaseCalendarMixin:
@@ -69,3 +71,26 @@ class Calender(BaseCalendarMixin):
             'week_names': self.get_week_names(),
         }
         return calendar_data
+
+"""
+class button_clander():
+
+
+    data = {
+        '時間': [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        '空き状況': ["空き", "空き", "空き", "空き", "空き", "空き", "空き", "空き", "空き", "空き", "空き"],
+    }
+    df = pd.DataFrame(data)
+
+    fig, ax = plt.subplots(figsize=(3, 3))
+
+    ax.axis('off')
+    ax.axis('tight')
+
+    ax.table(cellText=df.values,
+             colLabels=df.columns,
+             bbox=[0, 0, 1, 1],
+             )
+    plt.show()
+
+"""
