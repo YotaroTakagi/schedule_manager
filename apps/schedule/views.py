@@ -5,6 +5,7 @@ from .models import Group
 from django.views import generic
 from . import calender
 import datetime
+from django.contrib.auth.models import User
 
 #render テンプレートをロードし、コンテキストに値を入れる。
 #コンテキストはテンプレート内の辺薄をpythonオブジェクトにマップする辞書。
@@ -45,6 +46,46 @@ def sent(request):
     context = {
         "current_time": current_time,
     }
+    return HttpResponse(template.render(context, request))
+
+def sign_up(request):
+    template = loader.get_template("schedule/sign_up.html")
+    #if request.method == 'POST':
+     #   form = SignUpForm(request.POST)
+      #  if form.is_valid():
+       #     form.save()
+        #    return redirect('schedule/templates/index.html')
+    #else:
+     #   form = SignUpForm()
+
+    context = {"test": "zzz"}#{'form':form}
+    return HttpResponse(template.render(context, request))#render(request, 'schedule/templates/sign_up.html', context)
+
+
+def login(request):
+    template = loader.get_template("schedule/login.html")
+    #if request.method == 'POST':
+     #   form = SignUpForm(request.POST)
+      #  if form.is_valid():
+       #     form.save()
+        #    return redirect('schedule/templates/index.html')
+    #else:
+     #   form = SignUpForm()
+
+    context = {"test": "zzz"}#{'form':form}
+    return HttpResponse(template.render(context, request))
+
+def logout(request):
+    template = loader.get_template("schedule/logout.html")
+    #if request.method == 'POST':
+     #   form = SignUpForm(request.POST)
+      #  if form.is_valid():
+       #     form.save()
+        #    return redirect('schedule/templates/index.html')
+    #else:
+     #   form = SignUpForm()
+
+    context = {"test": "zzz"}#{'form':form}
     return HttpResponse(template.render(context, request))
 
 
