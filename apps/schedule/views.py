@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 from .models import Group
@@ -59,8 +59,8 @@ def sign_up(request):
      #   form = SignUpForm()
 
     context = {"test": "zzz"}#{'form':form}
-    return HttpResponse(template.render(context, request))#render(request, 'schedule/templates/sign_up.html', context)
-
+    #return HttpResponse(template.render(context, request))#render(request, 'schedule/templates/sign_up.html', context)
+    return HttpResponse("http://localhost:8000/accounts/signup/")#redirect("/accounts/signup/")
 
 def login(request):
     template = loader.get_template("schedule/login.html")
@@ -74,6 +74,7 @@ def login(request):
 
     context = {"test": "zzz"}#{'form':form}
     return HttpResponse(template.render(context, request))
+#"http://localhost:8000/accounts/login/"
 
 def logout(request):
     template = loader.get_template("schedule/logout.html")
@@ -89,13 +90,4 @@ def logout(request):
     return HttpResponse(template.render(context, request))
 
 
-class MonthCalendar(calender.Calender, generic.TemplateView):
-    """月間カレンダーを表示するビュー"""
-    template_name = 'schedule/main.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        calendar_context = self.get_month_calendar()
-        context.update(calendar_context)
-        return context
 
