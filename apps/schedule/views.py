@@ -18,12 +18,6 @@ def index(request):
     }
     return HttpResponse(template.render(context, request))
 
-def main(request):
-    template = loader.get_template("schedule/main.html")
-    context = {
-        "test": "zzz",
-    }
-    return HttpResponse(template.render(context, request))
 
 def calender_view(request):
     template = loader.get_template("schedule/calender.html")
@@ -49,7 +43,7 @@ def sent(request):
     return HttpResponse(template.render(context, request))
 
 def sign_up(request):
-    template = loader.get_template("schedule/sign_up.html")
+    template = loader.get_template("allauth/account/signup.html")
     #if request.method == 'POST':
      #   form = SignUpForm(request.POST)
       #  if form.is_valid():
@@ -59,11 +53,11 @@ def sign_up(request):
      #   form = SignUpForm()
 
     context = {"test": "zzz"}#{'form':form}
-    #return HttpResponse(template.render(context, request))#render(request, 'schedule/templates/sign_up.html', context)
-    return HttpResponse("http://localhost:8000/accounts/signup/")#redirect("/accounts/signup/")
+    return HttpResponse(template.render(context, request))#render(request, 'schedule/templates/sign_up.html', context)
+
 
 def login(request):
-    template = loader.get_template("schedule/login.html")
+    template = loader.get_template("allauth/account/login.html")
     #if request.method == 'POST':
      #   form = SignUpForm(request.POST)
       #  if form.is_valid():
@@ -77,7 +71,7 @@ def login(request):
 #"http://localhost:8000/accounts/login/"
 
 def logout(request):
-    template = loader.get_template("schedule/logout.html")
+    template = loader.get_template("allauth/account/logout.html")
     #if request.method == 'POST':
      #   form = SignUpForm(request.POST)
       #  if form.is_valid():
