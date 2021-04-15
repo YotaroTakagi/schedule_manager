@@ -3,15 +3,14 @@
 {% block content %}
 
 <div>
-    <h2>予約申請</h2>
+    <h2>予約申請画面</h2>
 </div>
 <br>
 <a href="{% url 'calender' %}">calender</a>
-<a href="{% url 'index' %}">index</a>
-<a href="{% url 'sign_up' %}">sign_up'</a>
-<a href="{% url 'login' %}">login'</a>
-<a href="{% url 'logout' %}">logout'</a>
 <br>
+<a href="{% url 'index' %}">index</a>
+<br>
+
 <div>
     現在の時刻：{{ current_time }}
 </div>
@@ -159,13 +158,13 @@
 <br>
 <div>
     <form action="/sent/" method="GET" >
-        <button onclic="location.href"="/sent/">予約申請する</button>
+        <button onclic="location.href"="/sent/">予約申請する(確認画面へ飛ぶ)</button>
     </form>
 </div>
 <br>
 <div>
      <form action="/calender/" method="GET" >
-        <button onclic="location.href"="/calender/">カレンダーに戻る</button>
+        <button onclic="location.href"="/calender/">カレンダーに戻る(カレンダー画面へ飛ぶ)</button>
     </form>
 </div>
 

@@ -1,18 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <p>{{ test }}</p>
-    <p>{{ test }}</p>
-    <p>pythonanywhereからgitへテスト</p>
+<br>
+<h2>HOME</h2>
+<br>
+    <p>viewからの受け渡しテスト：{{ test }}</p>
+<br>
     <a href="{% url 'calender' %}">calender</a>
+<br>
     <a href="{% url 'reservation' %}">reservation'</a>
-    <a href="{% url 'sign_up' %}">sign_up'</a>
-    <a href="{% url 'login' %}">login'</a>
-    <a href="{% url 'logout' %}">logout'</a>
+<br>
+    <a href="{% url 'account_signup' %}">sign_up'</a>
+<br>
+    <a href="{% url 'account_login' %}">login'</a>
+<br>
+    <a href="{% url 'account_logout' %}">logout'</a>
+<br>
+<br>
         {% if test %}
-            <p>{{ test }}</p>
-            <a href="{% url 'index' %}">link</a>
+            <p>if文テスト</p>
 
         {% else %}
             <p>No request</p>
