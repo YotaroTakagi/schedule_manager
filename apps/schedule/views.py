@@ -6,6 +6,8 @@ from django.views import generic
 from . import calender
 import datetime
 from django.contrib.auth.models import User
+from .forms import UserForm
+from .models import UserName
 
 #render テンプレートをロードし、コンテキストに値を入れる。
 #コンテキストはテンプレート内の辺薄をpythonオブジェクトにマップする辞書。
@@ -88,3 +90,23 @@ def logout(request):
 
 
 """
+
+
+def addUser(request):
+    # リクエストがPOSTの場合
+    if request.method == 'POST':
+        # リクエストをもとにフォームをインスタンス化
+        userForm = UserForm(request.POST)
+        if userForm.is_valid():
+            userForm.save()
+
+    # 登録後、全件データを抽出
+    user_name = UserName.objects.all()
+    context = {
+        'msg': '現在の利用状況',
+        'userinfo': user_name,
+        'count': user_name.count,
+    }
+
+    # user.htmlへデータを渡す
+    return render(request, 'schedule/templates/reservation.html', context)
