@@ -6,7 +6,7 @@ from django.views import generic
 from . import calender
 import datetime
 from django.contrib.auth.models import User
-from .forms import UserForm
+from .forms import UserForm, ScheduleForm
 from .models import UserName
 
 #render テンプレートをロードし、コンテキストに値を入れる。
@@ -31,10 +31,23 @@ def calender_view(request):
 def reservation(request):
     template = loader.get_template("schedule/reservation.html")
     form = UserForm()
+    schedule_form = ScheduleForm()
+
+    if request.method == 'POST':
+        userForm = UserForm(request.POST)
+        if userForm.is_valid():
+            userForm.save()
+
+    if request.method == 'POST':
+        scheduleForm = ScheduleForm(request.POST)
+        if scheduleForm.is_valid():
+            scheduleForm.save()
+
     current_time = datetime.datetime.now()
     context = {
         "current_time": current_time,
         "userForm": form,
+        "scheduleForm": schedule_form,
     }
     return HttpResponse(template.render(context, request))
 
@@ -95,20 +108,28 @@ def logout(request):
 
 
 def addUser(request):
-    # リクエストがPOSTの場合
     if request.method == 'POST':
-        # リクエストをもとにフォームをインスタンス化
         userForm = UserForm(request.POST)
         if userForm.is_valid():
             userForm.save()
+    if request.method == 'POST':
+        scheduleForm = ScheduleForm(request.POST)
+        if scheduleForm.is_valid():
+            scheduleForm.save()
 
     # 登録後、全件データを抽出
+    """
     user_name = UserName.objects.all()
     context = {
         'msg': '現在の利用状況',
         'userinfo': user_name,
         'count': user_name.count,
     }
+    print("TEST",user_name)
+    """
+    context = {
+        'count': "aa"
+    }
 
     # user.htmlへデータを渡す
-    return render(request, 'schedule/templates/reservation.html', context)
+    return render(request, 'schedule/reservation.html', context)

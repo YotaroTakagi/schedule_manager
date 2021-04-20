@@ -14,5 +14,9 @@ class UserName(models.Model):
     def __str__(self):
         return self.user_name
 
+class ScheduleCondition(models.Model):
+    day_condition = models.CharField(max_length=8)
+    created_at = models.DateTimeField(default=timezone.now)
 
-
+    def __str__(self):
+        return self.day_condition
