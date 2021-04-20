@@ -169,23 +169,23 @@
 </div>
 <br>
 <div>
-    <form action='{% url "add" %}' method='POST' class='form'>
+    <form action='{% url "reservation" %}' method='POST' class='form'>
         <!-- ユーザー登録フォームを表示 -->
         {% csrf_token %}
         {{ userForm }}
         <button type='submit' class='btn btn-outline-primary'>登録</button>
         <a href='{% url "index" %}' class='btn btn-outline-secondary'>戻る</a>
     </form>
-
-    <form action='{% url "add" %}' method='POST' class='form'>
+</div>
+<br>
+<div>
+    <form action='{% url "reservation" %}' method='POST' class='form'>
         <!-- ユーザー登録フォームを表示 -->
         {% csrf_token %}
         {{ scheduleForm }}
         <button type='submit' class='btn btn-outline-primary'>登録</button>
         <a href='{% url "index" %}' class='btn btn-outline-secondary'>戻る</a>
     </form>
-
-
 
 </div>
 

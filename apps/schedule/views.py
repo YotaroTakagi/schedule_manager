@@ -105,31 +105,3 @@ def logout(request):
 
 
 """
-
-
-def addUser(request):
-    if request.method == 'POST':
-        userForm = UserForm(request.POST)
-        if userForm.is_valid():
-            userForm.save()
-    if request.method == 'POST':
-        scheduleForm = ScheduleForm(request.POST)
-        if scheduleForm.is_valid():
-            scheduleForm.save()
-
-    # 登録後、全件データを抽出
-    """
-    user_name = UserName.objects.all()
-    context = {
-        'msg': '現在の利用状況',
-        'userinfo': user_name,
-        'count': user_name.count,
-    }
-    print("TEST",user_name)
-    """
-    context = {
-        'count': "aa"
-    }
-
-    # user.htmlへデータを渡す
-    return render(request, 'schedule/reservation.html', context)
