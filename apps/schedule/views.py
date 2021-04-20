@@ -30,9 +30,11 @@ def calender_view(request):
 
 def reservation(request):
     template = loader.get_template("schedule/reservation.html")
+    form = UserForm()
     current_time = datetime.datetime.now()
     context = {
         "current_time": current_time,
+        "userForm": form,
     }
     return HttpResponse(template.render(context, request))
 

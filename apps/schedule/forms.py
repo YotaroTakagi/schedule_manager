@@ -6,7 +6,7 @@ from .models import UserName
 class UserForm(forms.ModelForm):
     class Meta:
         model = UserName
-        fields = ('user_name')
+        fields = ('user_name',)
         labels = {
-            'user_name': 'ユーザー名',
+            'user_name': 'ユ,ーザー名',
         }
