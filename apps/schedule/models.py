@@ -17,6 +17,10 @@ class UserName(models.Model):
 class ScheduleCondition(models.Model):
     day_condition = models.CharField(max_length=8)
     created_at = models.DateTimeField(default=timezone.now)
+    #place = models.CharField(max_length=8)
+    #day = models.CharField(max_length=8)
+    #month = models.CharField(max_length=8)
+    #月、日付、場所、空き状況、更新日
 
     def __str__(self):
         return self.day_condition
