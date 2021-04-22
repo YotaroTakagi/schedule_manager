@@ -6,72 +6,87 @@ from django.views import generic
 from . import calender
 import datetime
 from django.contrib.auth.models import User
-from .forms import UserForm, ScheduleForm
+from .forms import UserForm, ScheduleForm, ScheduleCondition
 from .models import UserName
 from django.views import View
 
 #render テンプレートをロードし、コンテキストに値を入れる。
 #コンテキストはテンプレート内の辺薄をpythonオブジェクトにマップする辞書。
 
-class Schedule(View):
+#class Schedule(View):
 
 
-    def index(request):
-        template = loader.get_template("schedule/index.html")
-        context = {
-            "test":"abc",
-        }
-        return HttpResponse(template.render(context, request))
+def index(request):
+    template = loader.get_template("schedule/index.html")
+    context = {
+        "test":"abc",
+    }
+    return HttpResponse(template.render(context, request))
 
 
-    def calender_view(request):
-        template = loader.get_template("schedule/calender.html")
-        context = {
-            "test": "zzz",
-        }
-        return HttpResponse(template.render(context, request))
+def calender_view(request):
+    template = loader.get_template("schedule/calender.html")
+    context = {
+        "test": "zzz",
+    }
+    return HttpResponse(template.render(context, request))
 
-    def reservation(request):
-        template = loader.get_template("schedule/reservation.html")
-        form = UserForm()
-        schedule_form = ScheduleForm()
+def reservation(request):
+    template = loader.get_template("schedule/reservation.html")
+    form = UserForm()
+    schedule_form = ScheduleForm()
 
-        if request.method == 'POST':
-            userForm = UserForm(request.POST)
-            if userForm.is_valid():
-                userForm.save()
+    if request.method == 'POST':
+        userForm = UserForm(request.POST)
+        if userForm.is_valid():
+            userForm.save()
 
-        if request.method == 'POST':
-            scheduleForm = ScheduleForm(request.POST)
-            if scheduleForm.is_valid():
-                scheduleForm.save()
+    if request.method == 'POST':
+        scheduleForm = ScheduleForm(request.POST)
+        if scheduleForm.is_valid():
+            scheduleForm.save()
 
-        current_time = datetime.datetime.now()
+    current_time = datetime.datetime.now()
 
-        if request.POST["day1"] == "0":
-            selected_1 = "予約不可"
-        elif request.POST["day1"] == "1":
-            selected_1 = "予約申請する"
-        else:
-            selected_1 = "空き"
+    if request.POST.get("1") == "0":
+        selected_1 = "予約不可"
+    elif request.POST.get("1") == "1":
+        selected_1 = "予約申請する"
+    else:
+        selected_1 = "空き"
+
+    if request.POST.get("2") == "0":
+        selected_2 = "予約不可"
+    elif request.POST.get("2") == "1":
+        selected_2 = "予約申請する"
+    else:
+        selected_2 = "空き"
+
+    Sc = ScheduleCondition(day_condition=selected_1)
+    Sc.save()
 
 
-        context = {
-            "current_time": current_time,
-            "userForm": form,
-            "scheduleForm": schedule_form,
-        }
-        return HttpResponse(template.render(context, request))
 
-    def sent(request):
-        template = loader.get_template("schedule/sent.html")
-        current_time = datetime.datetime.now()
-        context = {
-            "current_time": current_time,
-        }
-        return HttpResponse(template.render(context, request))
+    context = {
+        "current_time": current_time,
+        "userForm": form,
+        "scheduleForm": schedule_form,
+        "selected_1": selected_1,
+        "selected_2": selected_2,
 
-shedule_func = Schedule.as_view()
+    }
+    return HttpResponse(template.render(context, request))
+
+def sent(request):
+    template = loader.get_template("schedule/sent.html")
+    current_time = datetime.datetime.now()
+
+    context = {
+        "current_time": current_time,
+    }
+    return HttpResponse(template.render(context, request))
+
+#shedule_func = Schedule.as_view()
 
 """
 

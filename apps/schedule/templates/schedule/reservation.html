@@ -18,6 +18,9 @@
     現在の時刻：{{ current_time }}
 </div>
 <br>
+
+<form action='{% url "reservation" %}' method='POST' class='form'>
+{% csrf_token %}
 <div>
     <table class="table col-1">
         <thead>
@@ -37,14 +40,14 @@
         <tbody>
         <tr class="col-1">
             <td>
-                <select id="day1" name="day1">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
+                <select name="1">
+                    <option value="0">予約不可</option>
+                    <option value="1">予約申請する</option>
+                    <option value="2" selected>空き</option>
                 </select>
             </td>
             <td>
-                <select id="2" name="day2">
+                <select name="2">
                     <option value=0>予約不可</option>
                     <option value=1>予約申請する</option>
                     <option value=2 selected>空き</option>
@@ -158,12 +161,10 @@
 
     </table>
 </div>
+    <button type='submit' class='btn btn-outline-primary'>予約申請する(確認画面へ飛ぶ)</button>
+</form>
 <br>
-<div>
-    <form action="/sent/" method="GET" >
-        <button onclic="location.href"="/sent/">予約申請する(確認画面へ飛ぶ)</button>
-    </form>
-</div>
+
 <br>
 <div>
      <form action="/calender/" method="GET" >
@@ -190,9 +191,8 @@
         <a href='{% url "index" %}' class='btn btn-outline-secondary'>戻る</a>
     </form>
 
+    {{ selected_1 }}
+    {{ selected_2 }}
 </div>
-
-
-
 
 {% endblock %}
