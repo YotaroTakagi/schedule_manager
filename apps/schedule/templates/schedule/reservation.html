@@ -3,196 +3,188 @@
 {% block content %}
 
 <div>
-    <h2>予約申請画面</h2>
+    <h2>予約申請画面(ゲスト)</h2>
 </div>
-<div>
-    <h4>場所毎に色分け</h4>
-</div>
-<br>
-<a href="{% url 'calender' %}">calender</a>
-<br>
-<a href="{% url 'index' %}">index</a>
-<br>
+<h3>{{ month }}/{{ day }}の空き状況</h3>
 
-<div>
-    現在の時刻：{{ current_time }}
-</div>
+<a href="{% url 'index' %}">TOP</a>
+<br>
+<a href="{% url 'go_to_calender' %}">カレンダーへ</a>
 <br>
 
 <form action='{% url "reservation" %}' method='POST' class='form'>
 {% csrf_token %}
+    <input type="hidden" name="month" value="{{ day }}">
+    <input type="hidden" name="day" value="{{ day }}">
+    <input type="hidden" name="username" value="{{ user.username }}">
 <div>
     <table class="table col-1">
         <thead>
         <tr class="col-1">
-            <th>10:00</th>
-            <th>10:15</th>
-            <th>10:30</th>
-            <th>10:45</th>
-            <th>11:00</th>
-            <th>11:15</th>
-            <th>11:30</th>
-            <th>11:45</th>
-            <th>12:00</th>
+            {% for i in time_1 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
         </tr>
         </thead>
 
         <tbody>
         <tr class="col-1">
-            <td>
-                <select name="1">
-                    <option value="0">予約不可</option>
-                    <option value="1">予約申請する</option>
-                    <option value="2" selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select name="2">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select id="3" name="day3">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select id="4" name="day4">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select id="5" name="day5">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select id="6" name="day6">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select id="7" name="day7">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select id="8" name="day8">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
-            <td>
-                <select id="9" name="day9">
-                    <option value=0>予約不可</option>
-                    <option value=1>予約申請する</option>
-                    <option value=2 selected>空き</option>
-                </select>
-            </td>
+            {% for n in data_1 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ forloop.count }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
         </tr>
         </tbody>
 
         <thead>
         <tr class="col-1">
-            <th>12:15</th>
-            <th>12:30</th>
-            <th>13:45</th>
-            <th>13:00</th>
-            <th>13:15</th>
-            <th>13:30</th>
-            <th>13:45</th>
-            <th>14:00</th>
+            {% for i in time_2 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
         </tr>
         </thead>
 
         <tbody>
         <tr class="col-1">
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
+            {% for n in data_2 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ forloop.count }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>
+        <thead>
+        <tr class="col-1">
+            {% for i in time_3 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            {% for n in data_3 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
         </tr>
         </tbody>
 
         <thead>
         <tr class="col-1">
-            <th>14:15</th>
-            <th>14:30</th>
-            <th>14:45</th>
-            <th>15:00</th>
-            <th>15:15</th>
-            <th>15:30</th>
-            <th>15:45</th>
-            <th>16:00</th>
+            {% for i in time_4 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
         </tr>
         </thead>
 
         <tbody>
         <tr class="col-1">
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
-            <td>空き</td>
+            {% for n in data_4 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>
+        <br>
+        <thead>
+        <tr class="col-1">
+            {% for i in time_5 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            {% for n in data_5 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ n }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
         </tr>
         </tbody>
 
     </table>
 </div>
+    <br>
+    予約パスワード : <input type="text" name="pass">
+    <br>
+    <br>
     <button type='submit' class='btn btn-outline-primary'>予約申請する(確認画面へ飛ぶ)</button>
 </form>
-<br>
-
-<br>
-<div>
-     <form action="/calender/" method="GET" >
-        <button onclic="location.href"="/calender/">カレンダーに戻る(カレンダー画面へ飛ぶ)</button>
-    </form>
-</div>
-<br>
-<div>
-    <form action='{% url "reservation" %}' method='POST' class='form'>
-        <!-- ユーザー登録フォームを表示 -->
-        {% csrf_token %}
-        {{ userForm }}
-        <button type='submit' class='btn btn-outline-primary'>登録</button>
-        <a href='{% url "index" %}' class='btn btn-outline-secondary'>戻る</a>
-    </form>
-</div>
-<br>
-<div>
-    <form action='{% url "reservation" %}' method='POST' class='form'>
-        <!-- ユーザー登録フォームを表示 -->
-        {% csrf_token %}
-        {{ scheduleForm }}
-        <button type='submit' class='btn btn-outline-primary'>登録</button>
-        <a href='{% url "index" %}' class='btn btn-outline-secondary'>戻る</a>
-    </form>
-
-    {{ selected_1 }}
-    {{ selected_2 }}
-</div>
 
 {% endblock %}

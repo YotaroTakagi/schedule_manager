@@ -3,18 +3,48 @@
 {% block content %}
 
 <div>
-    <h3>テストカレンダ</h3>
     <br>
-    <a href="{% url 'index' %}">index</a>
+    <a href="{% url 'index' %}">TOPへ戻る</a>
     <br>
-    <a href="{% url 'reservation' %}">reservation</a>
     <br>
-    <h2>空き日時検索</h2>
+    <form action="/calender/view/" method="POST">
+        {% csrf_token %}
+        <div>時間
+            <select name="start_time">
+                {% for i in time %}
+                    <option value={{ i }}>{{ i }}時</option>
+                {% endfor %}
+                <option value=0 selected>未選択</option>
+            </select>
+            〜
+            <select name="end_time">
+                {% for i in time %}
+                    <option value={{ i }}>{{ i }}時</option>
+                {% endfor %}
+                <option value=0 selected>未選択</option>
+            </select>
+        </div>
+        <br>
+        <div>場所
+            <select name="place">
+                <option value="0">梅田</option>
+                <option value="1">難波</option>
+                <option value="2">岸和田</option>
+                <option value="3">布施</option>
+                <option value="4">梅田or難波</option>
+                <option value="5" selected>未選択</option>
+            </select>
+        </div>
+        <br>
+        <button type="submit">検索する</button>
+    </form>
     <br>
 </div>
-<br>
-<p>4月</p>
-<br>
+
+<div class="month">
+    {{ month }}月
+</div>
+
 <table class="table">
     <thead>
     <tr>
@@ -29,81 +59,27 @@
     </thead>
     <tbody>
         <tr>
-            <td>
-                <form action="/reservation/" method="GET" >
-                    <button onclic="location.href"="/reservation/">1</button>
-                </form>
-            </td>
-            <td>
-                <form action="/reservation/" method="GET" >
-                    <button onclic="location.href"="/reservation/">2</button>
-                </form>
-            </td>
-            <td>
-                <form action="/reservation/" method="GET" >
-                    <button onclic="location.href"="/reservation/">3</button>
-                </form>
-            </td>
-            <td>
-                <form action="/reservation/" method="GET" >
-                    <button onclic="location.href"="/reservation/">4</button>
-                </form>
-            </td>
-            <td>
-                <form action="/reservation/" method="GET" >
-                    <button onclic="location.href"="/reservation/">5</button>
-                </form>
-            </td>
-            <td>
-                <form action="/reservation/" method="GET" >
-                    <button onclic="location.href"="/reservation/">6</button>
-                </form>
-            </td>
-            <td>
-                <form action="/reservation/" method="GET" >
-                    <button onclic="location.href"="/reservation/">7</button>
-                </form>
-            </td>
+            {% for i in calendar_list %}
+                <td>
+                    <form action="/calender/" method="GET">
+                        {% if i == "place" %}
+                            <button style="width:30px;padding:3px;background-color:green" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
+                        {% else %}
+                            <button style="width:30px;padding:3px" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
+                        {% endif %}
+                        {% if forloop.counter|divisibleby:"7" %}
+                            <tr>
+                            </tr>
+                        {% endif %}
+                        <input type="hidden" name="username" value="{{ user.username }}">
+                    </form>
+                </td>
+            {% endfor %}
         </tr>
-        <tr>
-            <td>8</td>
-            <td>9</td>
-            <td>10</td>
-            <td>11</td>
-            <td>12</td>
-            <td>13</td>
-            <td>14</td>
-        </tr>
-        <tr>
-            <td>15</td>
-            <td>16</td>
-            <td>17</td>
-            <td>18</td>
-            <td>19</td>
-            <td>20</td>
-            <td>21</td>
-        </tr>
-        <tr>
-            <td>22</td>
-            <td>23</td>
-            <td>24</td>
-            <td>25</td>
-            <td>26</td>
-            <td>27</td>
-            <td>28</td>
-        </tr>
-        <tr>
-            <td>29</td>
-            <td>30</td>
-            <td>31</td>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-        </tr>
-    </tbody>
 
+    </tbody>
 </table>
+
 
 
 {% endblock %}

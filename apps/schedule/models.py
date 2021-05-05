@@ -15,12 +15,13 @@ class UserName(models.Model):
         return self.user_name
 
 class ScheduleCondition(models.Model):
-    day_condition = models.CharField(max_length=8)
+    month = models.CharField(max_length=8, null=True)
+    day = models.CharField(max_length=8, null=True)
+    time = models.CharField(max_length=8, null=True)
+    day_condition = models.CharField(max_length=8, default="予約不可")
+    place = models.CharField(max_length=8, null=True)
     created_at = models.DateTimeField(default=timezone.now)
-    #place = models.CharField(max_length=8)
-    #day = models.CharField(max_length=8)
-    #month = models.CharField(max_length=8)
-    #月、日付、場所、空き状況、更新日
+    user_name = models.CharField(max_length=8, null=True)
 
     def __str__(self):
         return self.day_condition

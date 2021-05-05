@@ -1,27 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<br>
-<h2>HOME</h2>
-<br>
-    <p>viewからの受け渡しテスト：{{ test }}</p>
-<br>
-    <a href="{% url 'calender' %}">calender</a>
-<br>
-    <a href="{% url 'reservation' %}">reservation'</a>
-<br>
-    <a href="{% url 'account_signup' %}">sign_up'</a>
-<br>
-    <a href="{% url 'account_login' %}">login'</a>
-<br>
-    <a href="{% url 'account_logout' %}">logout'</a>
+
 <br>
 
-        {% if test %}
-            <p>if文テスト</p>
-
-        {% else %}
-            <p>No request</p>
-        {% endif %}
-
+<form action='{% url "go_to_calender" %}' method='GET' class='form'>
+        <input type="hidden" name="username" value="{{ user.username }}">
+        <button type='submit' class='btn btn-outline-primary'>予約カレンダーへ</button>
+</form>
+<p>予約内容</p>
+<p>ホストとゲストで内容を分ける</p>
+<p>ホストは新着順に予約通知</p>
+<p>ゲストは予約内容</p>
 {% endblock %}

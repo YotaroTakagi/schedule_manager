@@ -10,9 +10,16 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
   </head>
   <body>
-
-      {% block content %}
-      {% endblock %}
+  {% if user.id %}
+        <p>{{ user.username }}さん、ログイン中です</p>
+        <a href="{% url 'account_logout' %}">ログアウト</a>
+  <br>
+    {% else %}
+        <a href="{% url 'login' %}">ログイン</a>
+        <a href="{% url 'create_account' %}">アカウント作成</a>
+    {% endif %}
+{% block content %}
+{% endblock %}
   </body>
 </html>
 

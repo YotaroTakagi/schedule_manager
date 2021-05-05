@@ -64,6 +64,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
             ],
+            'libraries': {
+                'show_reserve': 'schedule.templatetags.show_reserve' # 追記
+            },
         },
     },
 ]

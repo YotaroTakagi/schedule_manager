@@ -7,9 +7,18 @@
 </div>
 
 <div>
-    <a href="{% url 'calender' %}">カレンダーに戻る(カレンダー画面へ飛ぶ)</a>
-    <a href="{% url 'reservation' %}">閉じる(予約申請画面へ飛ぶ)</a>
+    <p>申請内容</p>
+    日にち：{{ month }}/{{ day }}
+    <br>
+    場所：{{ place_reserve }}
+    <br>
+    {% if time_reserve_first %}
+        時間：{{ time_reserve_first }}〜{{ time_reserve_last }}
+    {% endif %}
 </div>
 
-
+<div>
+    <a href="{% url 'go_to_calender' %}">カレンダーに戻る</a>
+    <a href="{% url 'index' %}">top</a>
+</div>
 {% endblock %}
