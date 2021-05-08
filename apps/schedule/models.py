@@ -24,4 +24,6 @@ class ScheduleCondition(models.Model):
     user_name = models.CharField(max_length=8, null=True)
 
     def __str__(self):
+        #list = self.month, self.day, self.time, self.day_condition, self.user_name,self.created_at
         return self.day_condition
+            #(self.month, self.day, self.time, self.day_condition, self.user_name,self.created_at)

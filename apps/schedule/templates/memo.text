@@ -146,3 +146,131 @@ class Burn(View):
         return render(request, "burn_out/index.html", content)
 
 burn = Burn.as_view()
+
+
+<thead>
+        <tr class="col-1">
+            {% for i in time_2 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            {% for n in data_2 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>
+        <thead>
+        <tr class="col-1">
+            {% for i in time_3 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            {% for n in data_3 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>
+
+        <thead>
+        <tr class="col-1">
+            {% for i in time_4 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            {% for n in data_4 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>
+        <br>
+        <thead>
+        <tr class="col-1">
+            {% for i in time_5 %}
+                <th>
+                    {{ i }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="col-1">
+            {% for n in data_5 %}
+                {% if n.day_condition == "空き" %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="1">予約申請する</option>
+                            <option value="2" selected>空き</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select name={{ forloop.counter }}>
+                            <option value="0" selected>予約不可</option>
+                            <option value="1" disabled>予約申請する</option>
+                        </select>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>

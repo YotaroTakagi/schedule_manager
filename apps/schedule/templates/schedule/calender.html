@@ -5,6 +5,7 @@
 <div>
     <br>
     <a href="{% url 'index' %}">TOPへ戻る</a>
+    {{ username_test }}
     <br>
     <br>
     <form action="/calender/view/" method="POST">
@@ -80,6 +81,83 @@
     </tbody>
 </table>
 
+{% if username == "yusuke" %}
+    {% if len_reservation_list == 0 %}
+        <p>yusuke</p>
+        <p>予約はありません</p>
+    {% else %}
+        <p>yusuke</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ユーザー名</th>
+                    <th>月</th>
+                    <th>日</th>
+                    <th>時間</th>
+                    <th>場所</th>
+                    <th>予約状況</th>
+                    <th>登録日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for i in reservation_list %}
+                        <td>
+                            {{ i }}
+                        </td>
+                        {% if forloop.counter|divisibleby:"7" %}
+                                    <tr>
+                                    </tr>
+                                {% endif %}
+                        {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+{% elif len_reservation_list_guest == 0 %}
+    <p>guest</p>
+    <p>予約はありません</p>
+{% else %}
+    <p>guest</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ユーザー名</th>
+                <th>月</th>
+                <th>日</th>
+                <th>時間</th>
+                <th>場所</th>
+                <th>予約状況</th>
+                <th>登録日時</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for i in reservation_list_guest %}
+                    <td>
+                        {{ i }}
+                    </td>
 
+                    {% if forloop.counter|divisibleby:"7" %}
+                        <tr>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <div>
+        <form action='{% url "go_to_calender" %}' method='GET' class='form'>
+            {% csrf_token %}
+            <input type="hidden" name="day" value="{{ day }}">
+            <input type="hidden" name="username" value="{{ user.username }}">
+            <input type="hidden" name="delete" value="delete">
+            <button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
+            取り消す日(半角数字): <input type="text" name="del_day">
+            取り消す時間帯(半角数字): <input type="text" name="del_time">
+        </form>
+    </div>
+{% endif %}
 
 {% endblock %}

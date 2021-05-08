@@ -14,169 +14,49 @@
 
 <form action='{% url "reservation" %}' method='POST' class='form'>
 {% csrf_token %}
-    <input type="hidden" name="month" value="{{ day }}">
+    <input type="hidden" name="month" value="{{ month }}">
     <input type="hidden" name="day" value="{{ day }}">
     <input type="hidden" name="username" value="{{ user.username }}">
 <div>
     <table class="table col-1">
-        <thead>
-        <tr class="col-1">
-            {% for i in time_1 %}
-                <th>
-                    {{ i }}
-                </th>
-            {% endfor %}
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr class="col-1">
-            {% for n in data_1 %}
-                {% if n.day_condition == "空き" %}
+        {% if data_len == 0 %}
+            {% for x, i in data %}
+                <tr>
                     <td>
-                        <select name={{ forloop.count }}>
-                            <option value="1">予約申請する</option>
-                            <option value="2" selected>空き</option>
-                        </select>
+                        {{ i.time }}
                     </td>
-                {% else %}
+                    {% if i.day_condition == "空き" %}
+                        <td>
+                            <select name={{ x }}>
+                                <option value="1">予約申請する</option>
+                                <option value="2" selected>空き</option>
+                            </select>
+                        </td>
+                    {% else %}
+                        <td>
+                            <select name={{ x }}>
+                                <option value="0" selected>予約不可</option>
+                                <option value="1" disabled>予約申請する</option>
+                            </select>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        {% else %}
+            {% for x, i in make_data %}
+                <tr>
                     <td>
-                        <select name={{ n }}>
+                        {{ i }}
+                    </td>
+                    <td>
+                        <select name={{ x }}>
                             <option value="0" selected>予約不可</option>
                             <option value="1" disabled>予約申請する</option>
                         </select>
                     </td>
-                {% endif %}
+                </tr>
             {% endfor %}
-        </tr>
-        </tbody>
-
-        <thead>
-        <tr class="col-1">
-            {% for i in time_2 %}
-                <th>
-                    {{ i }}
-                </th>
-            {% endfor %}
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr class="col-1">
-            {% for n in data_2 %}
-                {% if n.day_condition == "空き" %}
-                    <td>
-                        <select name={{ forloop.count }}>
-                            <option value="1">予約申請する</option>
-                            <option value="2" selected>空き</option>
-                        </select>
-                    </td>
-                {% else %}
-                    <td>
-                        <select name={{ n }}>
-                            <option value="0" selected>予約不可</option>
-                            <option value="1" disabled>予約申請する</option>
-                        </select>
-                    </td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-        </tbody>
-        <thead>
-        <tr class="col-1">
-            {% for i in time_3 %}
-                <th>
-                    {{ i }}
-                </th>
-            {% endfor %}
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr class="col-1">
-            {% for n in data_3 %}
-                {% if n.day_condition == "空き" %}
-                    <td>
-                        <select name={{ n }}>
-                            <option value="1">予約申請する</option>
-                            <option value="2" selected>空き</option>
-                        </select>
-                    </td>
-                {% else %}
-                    <td>
-                        <select name={{ n }}>
-                            <option value="0" selected>予約不可</option>
-                            <option value="1" disabled>予約申請する</option>
-                        </select>
-                    </td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-        </tbody>
-
-        <thead>
-        <tr class="col-1">
-            {% for i in time_4 %}
-                <th>
-                    {{ i }}
-                </th>
-            {% endfor %}
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr class="col-1">
-            {% for n in data_4 %}
-                {% if n.day_condition == "空き" %}
-                    <td>
-                        <select name={{ n }}>
-                            <option value="1">予約申請する</option>
-                            <option value="2" selected>空き</option>
-                        </select>
-                    </td>
-                {% else %}
-                    <td>
-                        <select name={{ n }}>
-                            <option value="0" selected>予約不可</option>
-                            <option value="1" disabled>予約申請する</option>
-                        </select>
-                    </td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-        </tbody>
-        <br>
-        <thead>
-        <tr class="col-1">
-            {% for i in time_5 %}
-                <th>
-                    {{ i }}
-                </th>
-            {% endfor %}
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr class="col-1">
-            {% for n in data_5 %}
-                {% if n.day_condition == "空き" %}
-                    <td>
-                        <select name={{ n }}>
-                            <option value="1">予約申請する</option>
-                            <option value="2" selected>空き</option>
-                        </select>
-                    </td>
-                {% else %}
-                    <td>
-                        <select name={{ n }}>
-                            <option value="0" selected>予約不可</option>
-                            <option value="1" disabled>予約申請する</option>
-                        </select>
-                    </td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-        </tbody>
+        {% endif %}
 
     </table>
 </div>

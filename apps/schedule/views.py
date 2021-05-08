@@ -44,6 +44,10 @@ def go_to_calender(request):
     time_search_list = []
     data_time = ""
     data_place = []
+    reservation_list = []
+    reservation_list_guest = []
+    len_reservation_list = 0
+    len_reservation_list_guest = 0
 
     #POSTリクエスト時の処理
     if request.method == "POST":
@@ -98,8 +102,58 @@ def go_to_calender(request):
             except:
                 calendar_list.append("no_place")
 
+    #GETリクエストのとき(カレンダーページに推移してきたとき、予約取り消し処理のとき)
     else:
         calendar_list = month_days
+
+        # 予約取り消し処理
+        if request.GET.get("delete") == "delete":
+            print("TEST00000")
+            username = request.GET.get("username")
+            del_day = request.GET.get("del_day")
+            del_time = request.GET.get("del_time")
+            del_reservation_data = ScheduleCondition.objects.filter(month=month, user_name=username,
+                                                                    day_condition="予約不可")
+            del_reserve_list = list(del_reservation_data.values_list("time", flat=True))
+            print("TEST")
+            print(del_reserve_list)
+            for i in del_reserve_list:
+                if del_time == i:
+                    print("UPDATE")
+                    del_data = ScheduleCondition.objects.get(month=month, day=del_day, user_name=username, time=str(del_time),
+                                                             day_condition="予約不可")
+                    del_data.day_condition = "空き"
+                    del_data.user_name = "予約取り消し済み"
+                    del_data.save()
+                    break
+
+        reservation_data = ScheduleCondition.objects.filter(month=month, day_condition="予約不可").exclude(user_name="yusuke").order_by("created_at")
+        for i in reservation_data:
+            reservation_list.append(i.user_name)
+            reservation_list.append(i.month)
+            reservation_list.append(i.day)
+            reservation_list.append(i.time)
+            reservation_list.append(i.place)
+            reservation_list.append(i.day_condition)
+            reservation_list.append(i.created_at)
+
+        reservation_list = list(reservation_list)
+        len_reservation_list = len(reservation_list)
+
+        reservation_data_guest = ScheduleCondition.objects.filter(month=month, day_condition="予約不可",
+                                                                  user_name=username).order_by("created_at")
+        for i in reservation_data_guest:
+            reservation_list_guest.append(i.user_name)
+            reservation_list_guest.append(i.month)
+            reservation_list_guest.append(i.day)
+            reservation_list_guest.append(i.time)
+            reservation_list_guest.append(i.place)
+            reservation_list_guest.append(i.day_condition)
+            reservation_list_guest.append(i.created_at)
+
+        reservation_list_guest = list(reservation_list_guest)
+        len_reservation_list_guest = len(reservation_list_guest)
+
 
     context = {
         "month": month,
@@ -107,6 +161,10 @@ def go_to_calender(request):
         "month_days": month_days,
         "calendar_list": calendar_list,
         "username": username,
+        "reservation_list": reservation_list,
+        "reservation_list_guest": reservation_list_guest,
+        "len_reservation_list": len_reservation_list,
+        "len_reservation_list_guest": len_reservation_list_guest,
     }
     return HttpResponse(template.render(context, request))
 
@@ -137,13 +195,22 @@ def calender_view(request):
 
     #データベースから月と日にちが合致するデータを取得
     data = ScheduleCondition.objects.filter(day=day, month=month)
+    make_data = []
+    data_len = 0
     if len(data) == 0:
-        data = [n for n in range(1, (month_days+1))]
-    data_1 = data[1:7]
-    data_2 = data[7:13]
-    data_3 = data[13:19]
-    data_4 = data[19:25]
-    data_5 = data[25:(month_days)]
+        make_data = ["{:02d}:{:02d}-{:02d}:{:02d}".format((start_time + timedelta(minutes=n * 30)).hour,
+                                          (start_time + timedelta(minutes=n * 30)).minute,
+                                          (start_time + timedelta(minutes=(n + 1) * 30)).hour,
+                                          (start_time + timedelta(minutes=(n + 1) * 30)).minute)
+                                           for n in range(0, 30)]
+        make_data = make_data[0:(month_days)]
+        data = [n for n in range(0, 100)]
+        data_len = len(data)
+    else:
+        data = data[0:30]
+
+    numbers = [str(n) for n in range(1, 31)]
+    numbers = numbers[0:30]
 
     context = {
         "username": username,
@@ -153,12 +220,12 @@ def calender_view(request):
         'condition_2': [str(n) for n in range(7, 13)],
         'condition_3': [str(n) for n in range(13, 19)],
         'condition_4': [str(n) for n in range(19, 25)],
-        'condition_5': [str(n) for n in range(25, (month_days+1))],
+        'condition_5': [str(n) for n in range(25, (month_days))],
         'place_1': ["place_"+str(n) for n in range(1, 7)],
         'place_2': ["place_"+str(n) for n in range(7, 13)],
         'place_3': ["place_"+str(n) for n in range(13, 19)],
         'place_4': ["place_"+str(n) for n in range(19, 25)],
-        'place_5': ["place_"+str(n) for n in range(25, (month_days+1))],
+        'place_5': ["place_"+str(n) for n in range(25, (month_days))],
         'time_1': ["{:02d}:{:02d}-{:02d}:{:02d}".format((start_time + timedelta(minutes=n * 30)).hour,
                                                         (start_time + timedelta(minutes=n * 30)).minute,
                                                         (start_time + timedelta(minutes=(n + 1) * 30)).hour,
@@ -179,12 +246,9 @@ def calender_view(request):
                                                         (start_time + timedelta(minutes=n * 30)).minute,
                                                         (start_time + timedelta(minutes=(n + 1) * 30)).hour,
                                                         (start_time + timedelta(minutes=(n + 1) * 30)).minute) for n in range(24, 30)],
-
-        "data_1": data_1,
-        "data_2": data_2,
-        "data_3": data_3,
-        "data_4": data_4,
-        "data_5": data_5,
+        "data": zip(numbers, data),
+        "make_data": zip(numbers, make_data),
+        "data_len": data_len,
     }
     return HttpResponse(template.render(context, request))
 
@@ -198,7 +262,19 @@ def reservation(request):
     template = loader.get_template("schedule/sent.html")
     schedule_form = ScheduleForm()
     time_reserve = []
+    len_reserve_list = 0
     month_days = calendar.monthrange(2021, month)[1]
+
+    data = ScheduleCondition.objects.filter(day=day, month=month)
+    data_time = []
+    if len(data) == 0:
+        data = [n for n in range(1, (month_days + 1))]
+    else:
+        data_time = list(data.values_list("time", flat=True))
+    if len(data_time) == 0:
+        data_time = [n for n in range(1, (month_days + 1))]
+    data = data[0:(month_days)]
+    data_time = data_time[0:(month_days)]
 
     context = {
         "current_time": current_time,
@@ -215,13 +291,15 @@ def reservation(request):
             if scheduleForm.is_valid():
                 scheduleForm.save()
 
-            for i in range(1, month_days):
-                if request.POST.get(i) == "0":
+            for i in range(1, 31):
+                if request.POST.get(str(i)) == "0":
                     selected_i = "予約不可"
-                elif request.POST.get(i) == "1":
+                elif request.POST.get(str(i)) == "1":
                     selected_i = "予約申請する"
                 else:
                     selected_i = "空き"
+
+                print(selected_i)
 
                 time_i = "{:02d}:{:02d}-{:02d}:{:02d}".format((start_time + timedelta(minutes=(i - 1) * 30)).hour,
                                                               (start_time + timedelta(minutes=(i - 1) * 30)).minute,
@@ -230,11 +308,34 @@ def reservation(request):
 
                 if selected_i == "予約申請する":
                     time_reserve.append(time_i)
-                Sc = ScheduleCondition(month=month, day=day, day_condition=selected_i, user_name=username, time=time_i)
-                Sc.save()
+                    valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i, day_condition="空き")
+                else:
+                    valid = []
+                valid = len(valid)
+                print(valid)
+
+                if valid != 0:
+                    print("UPDATE")
+                    update = ScheduleCondition.objects.get(month=month, day=day, time=time_i)
+                    update.user_name = username
+                    update.day_condition = "予約不可"
+                    update.save()
+                else:
+                    print("NO-UPDATE")
+
                 context[str(selected_i)] = selected_i
         context["time_reserve_first"] = time_reserve[0][:5]
         context["time_reserve_last"] = time_reserve[-1][-5:]
+        context["username"] = username
+
+        reserve_list = []
+        reservation_data = ScheduleCondition.objects.filter(day=day, month=month, user_name=username,
+                                                            day_condition="予約不可")
+        if reservation_data != 0:
+            reserve_list = list(reservation_data.values_list("time", flat=True))
+            len_reserve_list = len(reserve_list)
+        context["reserve_list"] = reserve_list
+        context["len_reserve_list"] = len_reserve_list
 
     return HttpResponse(template.render(context, request))
 
@@ -261,7 +362,7 @@ def reservation_host(request):
             if scheduleForm.is_valid():
                 scheduleForm.save()
 
-            for i in range(1, (month_days+1)):
+            for i in range(1, 31):
                 if request.POST.get(str(i)) == "0":
                     selected_i = "予約不可"
                 elif request.POST.get(str(i)) == "1":
@@ -292,10 +393,27 @@ def reservation_host(request):
                 if selected_i == "予約申請する":
                     place_reserve.append(place_i)
                     time_reserve.append(time_i)
+                else:
+                    place_reserve.append("未定")
+                    time_reserve.append(time_i)
 
-                Sc = ScheduleCondition(month=month, day=day, day_condition=selected_i, place=place_i, time=time_i,
-                                       user_name=username)
-                Sc.save()
+                valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i,
+                                                         day_condition="空き")
+                valid = len(valid)
+                print(valid)
+
+                if valid != 0:
+                    print("UPDATE")
+                    update = ScheduleCondition.objects.get(month=month, day=day, time=time_i)
+                    update.user_name = username
+                    update.day_condition = selected_i
+                    update.place = place_i
+                    update.save()
+                else:
+                    print("CREATE")
+                    Sc = ScheduleCondition(month=month, day=day, day_condition=selected_i, place=place_i, time=time_i,
+                                           user_name=username)
+                    Sc.save()
 
                 selected.append(selected_i)
                 place.append(place_i)
@@ -324,12 +442,46 @@ def reservation_host(request):
 def sent(request):
     template = loader.get_template("schedule/sent.html")
     current_time = datetime.now()
+    reserve_list = []
+    day = ""
+    month = ""
+    len_reserve_list = 0
+
+    if request.method == 'POST':
+        username = request.POST.get("username")
+        month = request.POST.get("month")
+        day = request.POST.get("day")
+        reservation_data = ScheduleCondition.objects.filter(day=day, month=month)
+        reserve_list = list(reservation_data.values_list("time", flat=True))
+
+        print("LEN" ,len_reserve_list)
+        for i in reserve_list:
+            if request.POST.get(i) == i:
+                print("UPDATE")
+                del_data = ScheduleCondition.objects.get(day=day, month=month, time=i, day_condition="予約不可")
+                del_data.day_condition = "空き"
+                del_data.user_name = "予約取り消し済み"
+                del_data.save()
+                break
+
+        reservation_data = ScheduleCondition.objects.filter(day=day, month=month, user_name=username, day_condition="予約不可")
+        if reservation_data != 0:
+            reserve_list = list(reservation_data.values_list("time", flat=True))
+        len_reserve_list = len(reserve_list)
 
     context = {
+        "day": day,
+        "month": month,
+        "reserve_list": reserve_list,
         "current_time": current_time,
+        "len_reserve_list": len_reserve_list,
     }
     return HttpResponse(template.render(context, request))
 
+def delete(request):
+    pass
+
+"""
 class Create_account(CreateView):
     def post(self, request, *args, **kwargs):
         form = UserCreateForm(data=request.POST)
@@ -366,3 +518,4 @@ class Account_login(View):
         return render(request, 'login.html', {'form': form,})
 
 account_login = Account_login.as_view()
+"""
