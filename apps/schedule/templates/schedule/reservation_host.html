@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<div class="text-center">
+    <h4>予約申請画面(ホスト)</h4>
+</div>
+<div class="text-center">
+    <h4>{{ month }}/{{ day }}の空き状況</h4>
+</div>
+<form action='{% url "reservation_host" %}' method='POST' class='form'>
+    {% csrf_token %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>時間帯</th>
+                    <th>予約状況</th>
+                    <th>場所選択</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if data_len == 0 %}
+                    {% for x, i in data %}
+                        <tr>
+                            <td>
+                                {{ i.time }}
+                            </td>
+                            {% if i.day_condition == "空き" or i.day_condition == "予約取り消し済み" %}
+                                <td>
+                                    <select name={{ x }}>
+                                        <option value="2" selected>空き</option>
+                                        <option value="0">予約不可</option>
+                                    </select>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <select name={{ x }}>
+                                        <option value="2">空き</option>
+                                        <option value="0" selected>予約不可</option>
+                                    </select>
+                                </td>
+                            {% endif %}
+                            <td>場所:
+                                {% if i.place == "梅田" %}
+                                    <select name={{ i.time }}>
+                                        <option value="0" selected>梅田</option>
+                                        <option value="1">難波</option>
+                                        <option value="2">岸和田</option>
+                                        <option value="3">布施</option>
+                                        <option value="4">梅田or難波</option>
+                                        <option value="5">未定</option>
+                                    </select>
+                                {% elif i.place == "難波" %}
+                                    <select name={{ i.time }}>
+                                        <option value="0">梅田</option>
+                                        <option value="1" selected>難波</option>
+                                        <option value="2">岸和田</option>
+                                        <option value="3">布施</option>
+                                        <option value="4">梅田or難波</option>
+                                        <option value="5">未定</option>
+                                    </select>
+                                {% elif i.place == "岸和田" %}
+                                    <select name={{ i.time }}>
+                                        <option value="0">梅田</option>
+                                        <option value="1">難波</option>
+                                        <option value="2" selected>岸和田</option>
+                                        <option value="3">布施</option>
+                                        <option value="4">梅田or難波</option>
+                                        <option value="5">未定</option>
+                                    </select>
+                                {% elif i.place == "布施" %}
+                                    <select name={{ i.time }}>
+                                        <option value="0">梅田</option>
+                                        <option value="1">難波</option>
+                                        <option value="2">岸和田</option>
+                                        <option value="3" selected>布施</option>
+                                        <option value="4">梅田or難波</option>
+                                        <option value="5">未定</option>
+                                    </select>
+                                {% elif i.place == "梅田or難波" %}
+                                    <select name={{ i.time }}>
+                                        <option value="0">梅田</option>
+                                        <option value="1">難波</option>
+                                        <option value="2">岸和田</option>
+                                        <option value="3">布施</option>
+                                        <option value="4" selected>梅田or難波</option>
+                                        <option value="5">未定</option>
+                                    </select>
+                                {% else %}
+                                    <select name={{ i.time }}>
+                                        <option value="0">梅田</option>
+                                        <option value="1">難波</option>
+                                        <option value="2">岸和田</option>
+                                        <option value="3">布施</option>
+                                        <option value="4">梅田or難波</option>
+                                        <option value="5" selected>未定</option>
+                                    </select>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for x, i in make_data %}
+                        <tr>
+                            <td>
+                                {{ i }}
+                            </td>
+                            <td>
+                                <select name={{ x }}>
+                                    <option value="0" selected>予約不可</option>
+                                    <option value="2">空き</option>
+                                </select>
+                            </td>
+                            <td>場所:
+                                <select name={{ i }}>
+                                    <option value="0">梅田</option>
+                                    <option value="1">難波</option>
+                                    <option value="2">岸和田</option>
+                                    <option value="3">布施</option>
+                                    <option value="4">梅田or難波</option>
+                                    <option value="5" selected>未定</option>
+                                </select>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <input type="hidden" name="day" value="{{ day }}">
+    <input type="hidden" name="month" value="{{ month }}">
+    <input type="hidden" name="username" value="{{ user.username }}">
+    予約パスワード : <input type="text" name="pass">
+    <br>
+    <br>
+    <button type='submit' class='btn btn-outline-primary'>空き状況を変更する(確認画面へ飛ぶ)</button>
+</form>
+<br>
+
+{% endblock %}

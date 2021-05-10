@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <p>申し訳ありません、予約出来ませんでした</p>
+    <p>予約申請パスワードの確認をし、もう一度申請してください</p>
+</div>
+
+<div>
+    <a href="{% url 'go_to_calender' %}">カレンダーに戻る</a>
+    <a href="{% url 'index' %}">top</a>
+</div>
+{% endblock %}
