@@ -1,15 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <br>
 
-<form action='{% url "go_to_calender" %}' method='GET' class='form'>
-        <input type="hidden" name="username" value="{{ user.username }}">
-        <button type='submit' class='btn btn-outline-primary'>予約カレンダーへ</button>
-</form>
-<p>予約内容</p>
-<p>ホストとゲストで内容を分ける</p>
-<p>ホストは新着順に予約通知</p>
-<p>ゲストは予約内容</p>
 {% endblock %}

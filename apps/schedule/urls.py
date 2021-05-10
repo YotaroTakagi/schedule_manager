@@ -10,7 +10,6 @@ urlpatterns = [
     path("reservation/", views.reservation, name="reservation"),
     path("reservation_host/", views.reservation_host, name="reservation_host"),
     path("sent/", views.sent, name="sent"),
-    path("sent/delete/", views.delete, name="delete"),
 
     #path("create_account/", views.Create_account, name="create_account"),
     #path("login/", views.Account_login, name="login"),

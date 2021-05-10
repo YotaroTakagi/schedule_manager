@@ -11,9 +11,36 @@ from django.views.generic import CreateView
 from .forms import UserCreateForm, ScheduleForm, ScheduleCondition
 from .models import UserName, ScheduleCondition
 from django.views import View
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 #render テンプレートをロードし、コンテキストに値を入れる。
 #コンテキストはテンプレート内の辺薄をpythonオブジェクトにマップする辞書。
+
+#ページネーション
+def paginate_queryset(request, queryset, count):
+    """Pageオブジェクトを返す。
+
+    ページングしたい場合に利用してください。
+
+    countは、1ページに表示する件数です。
+    返却するPgaeオブジェクトは、以下のような感じで使えます。
+
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}">Prev</a>
+        {% endif %}
+
+    また、page_obj.object_list で、count件数分の絞り込まれたquerysetが取得できます。
+
+    """
+    paginator = Paginator(queryset, count)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+    return page_obj
 
 #トップページ
 def index(request):
@@ -39,18 +66,29 @@ def go_to_calender(request):
     month_days = [i for i in range(1, (month_days+1))]
     calendar_list = []
     start_time = 0
+    del_start_time = datetime(2021, 1, 1, 9, 0, 0)
     end_time = 0
     delta = 0
     time_search_list = []
     data_time = ""
     data_place = []
+    #reservation_data_page = None
     reservation_list = []
     reservation_list_guest = []
+    delete_list = []
     len_reservation_list = 0
     len_reservation_list_guest = 0
+    len_delete_list = 0
+    del_time_list = ["{:02d}:{:02d}-{:02d}:{:02d}".format((del_start_time + timedelta(minutes=n * 30)).hour,
+                                                      (del_start_time + timedelta(minutes=n * 30)).minute,
+                                                      (del_start_time + timedelta(minutes=(n + 1) * 30)).hour,
+                                                      (del_start_time + timedelta(minutes=(n + 1) * 30)).minute)
+                                                        for n in range(0, 30)]
 
-    #POSTリクエスト時の処理
+
+    #POSTリクエスト時の処理、検索処理
     if request.method == "POST":
+        username = request.POST.get("username")
         #場所検索処理
         if request.POST.get("place") == "0":
             place = "梅田"
@@ -87,7 +125,7 @@ def go_to_calender(request):
 
         #月の各日に検索をかける
         for i in month_days:
-            data = ScheduleCondition.objects.filter(month=month, day=i, day_condition="空き", place=place)
+            data = ScheduleCondition.objects.filter(month=month, day=i, place=place).exclude(day_condition="予約不可")
             data_time = list(data.values_list("time", flat=True))
             #１時間以上空きがあれば、空いている状態にする。
             try:
@@ -101,6 +139,48 @@ def go_to_calender(request):
                     calendar_list.append("no_place")
             except:
                 calendar_list.append("no_place")
+
+        reservation_data = ScheduleCondition.objects.filter(month=month, day_condition="予約不可").exclude(
+                                                                user_name="yusuke").order_by("created_at")
+        for i in reservation_data:
+            reservation_list.append(i.user_name)
+            reservation_list.append(i.month)
+            reservation_list.append(i.day)
+            reservation_list.append(i.time)
+            reservation_list.append(i.place)
+            reservation_list.append(i.day_condition)
+            reservation_list.append(i.created_at)
+
+        reservation_list = list(reservation_list)
+        len_reservation_list = len(reservation_list)
+
+        delete_data = ScheduleCondition.objects.filter(month=month, day_condition="予約取り消し済み").exclude(
+                                                        user_name="yusuke").order_by("created_at")
+        for i in delete_data:
+            delete_list.append(i.user_name)
+            delete_list.append(i.month)
+            delete_list.append(i.day)
+            delete_list.append(i.time)
+            delete_list.append(i.place)
+            delete_list.append(i.day_condition)
+            delete_list.append(i.created_at)
+
+        delete_list = list(delete_list)
+        len_delete_list = len(delete_list)
+
+        reservation_data_guest = ScheduleCondition.objects.filter(month=month, day_condition="予約不可",
+                                                                  user_name=username).order_by("created_at")
+        for i in reservation_data_guest:
+            reservation_list_guest.append(i.user_name)
+            reservation_list_guest.append(i.month)
+            reservation_list_guest.append(i.day)
+            reservation_list_guest.append(i.time)
+            reservation_list_guest.append(i.place)
+            reservation_list_guest.append(i.day_condition)
+            reservation_list_guest.append(i.created_at)
+
+        reservation_list_guest = list(reservation_list_guest)
+        len_reservation_list_guest = len(reservation_list_guest)
 
     #GETリクエストのとき(カレンダーページに推移してきたとき、予約取り消し処理のとき)
     else:
@@ -120,14 +200,15 @@ def go_to_calender(request):
             for i in del_reserve_list:
                 if del_time == i:
                     print("UPDATE")
-                    del_data = ScheduleCondition.objects.get(month=month, day=del_day, user_name=username, time=str(del_time),
+                    del_data = ScheduleCondition.objects.get(month=month, day=del_day, user_name=username, time=del_time,
                                                              day_condition="予約不可")
-                    del_data.day_condition = "空き"
-                    del_data.user_name = "予約取り消し済み"
+                    del_data.day_condition = "予約取り消し済み"
+                    del_data.user_name = username
                     del_data.save()
                     break
 
-        reservation_data = ScheduleCondition.objects.filter(month=month, day_condition="予約不可").exclude(user_name="yusuke").order_by("created_at")
+        reservation_data = ScheduleCondition.objects.filter(month=month, day_condition="予約不可").exclude(
+                                                                user_name="yusuke").order_by("created_at")
         for i in reservation_data:
             reservation_list.append(i.user_name)
             reservation_list.append(i.month)
@@ -138,7 +219,22 @@ def go_to_calender(request):
             reservation_list.append(i.created_at)
 
         reservation_list = list(reservation_list)
+        #reservation_data_page = paginate_queryset(request, reservation_list, 2)
         len_reservation_list = len(reservation_list)
+
+        delete_data = ScheduleCondition.objects.filter(month=month, day_condition="予約取り消し済み").exclude(
+            user_name="yusuke").order_by("created_at")
+        for i in delete_data:
+            delete_list.append(i.user_name)
+            delete_list.append(i.month)
+            delete_list.append(i.day)
+            delete_list.append(i.time)
+            delete_list.append(i.place)
+            delete_list.append(i.day_condition)
+            delete_list.append(i.created_at)
+
+        delete_list = list(delete_list)
+        len_delete_list = len(delete_list)
 
         reservation_data_guest = ScheduleCondition.objects.filter(month=month, day_condition="予約不可",
                                                                   user_name=username).order_by("created_at")
@@ -163,8 +259,13 @@ def go_to_calender(request):
         "username": username,
         "reservation_list": reservation_list,
         "reservation_list_guest": reservation_list_guest,
+        "delete_list": delete_list,
         "len_reservation_list": len_reservation_list,
         "len_reservation_list_guest": len_reservation_list_guest,
+        "len_delete_list": len_delete_list,
+        "del_time_list": del_time_list,
+        #"page_obj_list": reservation_data_page.object_list,
+        #"page_obj": reservation_data_page,
     }
     return HttpResponse(template.render(context, request))
 
@@ -211,6 +312,8 @@ def calender_view(request):
 
     numbers = [str(n) for n in range(1, 31)]
     numbers = numbers[0:30]
+    int_numbers = [n for n in range(1, 31)]
+    int_numbers = int_numbers[0:30]
 
     context = {
         "username": username,
@@ -330,12 +433,13 @@ def reservation(request):
 
         reserve_list = []
         reservation_data = ScheduleCondition.objects.filter(day=day, month=month, user_name=username,
-                                                            day_condition="予約不可")
+                                                            day_condition="予約不可").order_by("created_at")
         if reservation_data != 0:
             reserve_list = list(reservation_data.values_list("time", flat=True))
             len_reserve_list = len(reserve_list)
         context["reserve_list"] = reserve_list
         context["len_reserve_list"] = len_reserve_list
+        context["reservation_data"] = reservation_data
 
     return HttpResponse(template.render(context, request))
 
@@ -365,40 +469,38 @@ def reservation_host(request):
             for i in range(1, 31):
                 if request.POST.get(str(i)) == "0":
                     selected_i = "予約不可"
-                elif request.POST.get(str(i)) == "1":
-                    selected_i = "予約申請する"
                 else:
                     selected_i = "空き"
-
-                if request.POST.get("place_"+str(i)) == "0":
-                    place_i = "梅田"
-                elif request.POST.get("place_"+str(i)) == "1":
-                    place_i = "難波"
-                elif request.POST.get("place_"+str(i)) == "2":
-                    place_i = "岸和田"
-                elif request.POST.get("place_"+str(i)) == "3":
-                    place_i = "布施"
-                elif request.POST.get("place_"+str(i)) == "4":
-                    place_i = "梅田or難波"
-                else:
-                    place_i = "未定"
 
                 time_i = "{:02d}:{:02d}-{:02d}:{:02d}".format((start_time + timedelta(minutes=(i-1) * 30)).hour,
                                                               (start_time + timedelta(minutes=(i-1) * 30)).minute,
                                                               (start_time + timedelta(minutes=i * 30)).hour,
                                                               (start_time + timedelta(minutes=i * 30)).minute)
+
+                if request.POST.get(time_i) == "0":
+                    place_i = "梅田"
+                elif request.POST.get(time_i) == "1":
+                    place_i = "難波"
+                elif request.POST.get(time_i) == "2":
+                    place_i = "岸和田"
+                elif request.POST.get(time_i) == "3":
+                    place_i = "布施"
+                elif request.POST.get(time_i) == "4":
+                    place_i = "梅田or難波"
+                else:
+                    place_i = "未定"
+
                 month = request.POST.get("month")
                 day = request.POST.get("day")
 
-                if selected_i == "予約申請する":
+                if selected_i == "空き":
                     place_reserve.append(place_i)
                     time_reserve.append(time_i)
                 else:
                     place_reserve.append("未定")
                     time_reserve.append(time_i)
 
-                valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i,
-                                                         day_condition="空き")
+                valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i)
                 valid = len(valid)
                 print(valid)
 
@@ -459,12 +561,13 @@ def sent(request):
             if request.POST.get(i) == i:
                 print("UPDATE")
                 del_data = ScheduleCondition.objects.get(day=day, month=month, time=i, day_condition="予約不可")
-                del_data.day_condition = "空き"
-                del_data.user_name = "予約取り消し済み"
+                del_data.day_condition = "予約取り消し済み"
+                del_data.user_name = username
                 del_data.save()
                 break
 
-        reservation_data = ScheduleCondition.objects.filter(day=day, month=month, user_name=username, day_condition="予約不可")
+        reservation_data = ScheduleCondition.objects.filter(day=day, month=month, user_name=username,
+                                                            day_condition="予約不可")
         if reservation_data != 0:
             reserve_list = list(reservation_data.values_list("time", flat=True))
         len_reserve_list = len(reserve_list)
@@ -477,9 +580,6 @@ def sent(request):
         "len_reserve_list": len_reserve_list,
     }
     return HttpResponse(template.render(context, request))
-
-def delete(request):
-    pass
 
 """
 class Create_account(CreateView):

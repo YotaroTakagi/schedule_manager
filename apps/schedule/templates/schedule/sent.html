@@ -1,47 +1,52 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div>
-    <p>予約申請が完了しました</p>
+<br>
+<div class="text-center">
+    <h3>予約申請が完了しました</h3>
 </div>
-<div>
-    <a href="{% url 'go_to_calender' %}">カレンダーに戻る</a>
-    <a href="{% url 'index' %}">top</a>
-</div>
-
-<div>
-    <p>申請内容</p>
-    日にち：{{ month }}/{{ day }}
+<br>
+<div class="text-center">
+    <h5>予約内容一覧</h5>
     <br>
-    場所：{{ place_reserve }}
-    <br>
-    {% if time_reserve_first %}
-        時間：{{ time_reserve_first }}〜{{ time_reserve_last }}
-    {% endif %}
-
-    <p>予約一覧</p>
-    <table class="table col-1">
-        {% if len_reserve_list != 0 %}
-            {% for i in reserve_list %}
-                <tr>
-                    <td>
-                        {{ i }}
-                    </td>
-                    <td>
-                        <form action='{% url "sent" %}' method='POST'>
-                            {% csrf_token %}
-                            <input type="hidden" name="day" value="{{ day }}">
-                            <input type="hidden" name="month" value="{{ month }}">
-                            <input type="hidden" name="username" value="{{ user.username }}">
-                            <input type="hidden" name={{ i }} value={{ i }}>
-                            <button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-        {% else %}
-            <tr><td>予約がありません</td></tr>
-        {% endif %}
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>月/日</th>
+                <th>時間帯</th>
+                <th>場所</th>
+                <th>予約の取り消し</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if len_reserve_list != 0 %}
+                {% for i in reservation_data %}
+                    <tr>
+                        <td>
+                            {{ i.month }}&nbsp;/&nbsp;{{ i.day }}
+                        </td>
+                        <td>
+                            {{ i.time }}
+                        </td>
+                        <td>
+                            {{ i.place }}
+                        </td>
+                        <td>
+                            <form action='{% url "sent" %}' method='POST'>
+                                {% csrf_token %}
+                                <input type="hidden" name="day" value="{{ day }}">
+                                <input type="hidden" name="month" value="{{ month }}">
+                                <input type="hidden" name="username" value="{{ user.username }}">
+                                <input type="hidden" name={{ i }} value={{ i }}>
+                                <button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td>予約がありません</td></tr>
+            {% endif %}
+        </tbody>
     </table>
 
 

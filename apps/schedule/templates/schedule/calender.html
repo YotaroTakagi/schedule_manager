@@ -1,15 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<br>
 <div>
-    <br>
-    <a href="{% url 'index' %}">TOPへ戻る</a>
-    {{ username_test }}
-    <br>
-    <br>
     <form action="/calender/view/" method="POST">
         {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.username }}">
+        <input type="hidden" name="day" value="{{ day }}">
         <div>時間
             <select name="start_time">
                 {% for i in time %}
@@ -25,7 +22,6 @@
                 <option value=0 selected>未選択</option>
             </select>
         </div>
-        <br>
         <div>場所
             <select name="place">
                 <option value="0">梅田</option>
@@ -36,116 +32,162 @@
                 <option value="5" selected>未選択</option>
             </select>
         </div>
-        <br>
-        <button type="submit">検索する</button>
+        <p>空きを探したい時間帯と場所を選択してください</p>
+        <button type="submit">検索する</button><p>※空きがあると、カレンダーの日付が緑色になります</p>
     </form>
-    <br>
 </div>
 
-<div class="month">
-    {{ month }}月
+<div class="month text-center">
+    <h4>{{ month }}月</h4>
 </div>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>月</th>
-        <th>火</th>
-        <th>水</th>
-        <th>木</th>
-        <th>金</th>
-        <th>土</th>
-        <th>日</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr>
-            {% for i in calendar_list %}
-                <td>
-                    <form action="/calender/" method="GET">
-                        {% if i == "place" %}
-                            <button style="width:30px;padding:3px;background-color:green" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
-                        {% else %}
-                            <button style="width:30px;padding:3px" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
-                        {% endif %}
-                        {% if forloop.counter|divisibleby:"7" %}
-                            <tr>
-                            </tr>
-                        {% endif %}
-                        <input type="hidden" name="username" value="{{ user.username }}">
-                    </form>
-                </td>
-            {% endfor %}
-        </tr>
-
-    </tbody>
-</table>
-
-{% if username == "yusuke" %}
-    {% if len_reservation_list == 0 %}
-        <p>yusuke</p>
-        <p>予約はありません</p>
-    {% else %}
-        <p>yusuke</p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ユーザー名</th>
-                    <th>月</th>
-                    <th>日</th>
-                    <th>時間</th>
-                    <th>場所</th>
-                    <th>予約状況</th>
-                    <th>登録日時</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    {% for i in reservation_list %}
-                        <td>
-                            {{ i }}
-                        </td>
-                        {% if forloop.counter|divisibleby:"7" %}
-                                    <tr>
-                                    </tr>
-                                {% endif %}
-                        {% endfor %}
-                </tr>
-            </tbody>
-        </table>
-    {% endif %}
-{% elif len_reservation_list_guest == 0 %}
-    <p>guest</p>
-    <p>予約はありません</p>
-{% else %}
-    <p>guest</p>
-    <table class="table">
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-condensed">
         <thead>
             <tr>
-                <th>ユーザー名</th>
-                <th>月</th>
-                <th>日</th>
-                <th>時間</th>
-                <th>場所</th>
-                <th>予約状況</th>
-                <th>登録日時</th>
+                <th class="text-center">月</th>
+                <th class="text-center">火</th>
+                <th class="text-center">水</th>
+                <th class="text-center">木</th>
+                <th class="text-center">金</th>
+                <th class="text-center">土</th>
+                <th class="text-center">日</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                {% for i in reservation_list_guest %}
-                    <td>
-                        {{ i }}
+                {% for i in calendar_list %}
+                    <td class="text-center">
+                        <form action="/calender/" method="GET">
+                            {% if i == "place" %}
+                                <button style="width:30px;padding:3px;background-color:green" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
+                            {% else %}
+                                <button style="width:30px;padding:3px" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
+                            {% endif %}
+                            {% if forloop.counter|divisibleby:"7" %}
+                                <tr>
+                                </tr>
+                            {% endif %}
+                            <input type="hidden" name="username" value="{{ user.username }}">
+                        </form>
                     </td>
-
-                    {% if forloop.counter|divisibleby:"7" %}
-                        <tr>
-                        </tr>
-                    {% endif %}
                 {% endfor %}
             </tr>
         </tbody>
     </table>
+</div>
+<br>
+{% if username == "yusuke" %}
+    {% if len_reservation_list == 0 %}
+        <div class="text-center">
+            <h4>予約はありません</h4>
+        </div>
+    {% else %}
+        <div class="text-center">
+            <h4>予約一覧</h4>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th class="text-center">ユーザー名</th>
+                        <th class="text-center">月</th>
+                        <th class="text-center">日</th>
+                        <th class="text-center">時間</th>
+                        <th class="text-center">場所</th>
+                        <th class="text-center">予約状況</th>
+                        <th class="text-center">登録日時</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for i in reservation_list %}
+                            <td class="text-center">
+                                {{ i }}
+                            </td>
+                            {% if forloop.counter|divisibleby:"7" %}
+                                    <tr>
+                                    </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        {% if len_delete_list == 0 %}
+            <div class="text-center">
+                <h4>予約取り消しはありません</h4>
+            </div>
+        {% else %}
+            <div class="text-center">
+                <h4>予約取り消し一覧</h4>
+            </div>
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th class="text-center">ユーザー名</th>
+                        <th class="text-center">月</th>
+                        <th class="text-center">日</th>
+                        <th class="text-center">時間</th>
+                        <th class="text-center">場所</th>
+                        <th class="text-center">予約状況</th>
+                        <th class="text-center">登録日時</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for i in delete_list %}
+                            <td class="text-center">
+                                {{ i }}
+                            </td>
+                            {% if forloop.counter|divisibleby:"7" %}
+                                <tr>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
+{% elif len_reservation_list_guest == 0 %}
+    <div class="text-center">
+        <h4>予約はありません</h4>
+    </div>
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th class="text-center">ユーザー名</th>
+                    <th class="text-center">月</th>
+                    <th class="text-center">日</th>
+                    <th class="text-center">時間</th>
+                    <th class="text-center">場所</th>
+                    <th class="text-center">予約状況</th>
+                    <th class="text-center">登録日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for i in reservation_list_guest %}
+                        <td class="text-center">
+                            {% if i == "予約不可" %}
+                                <h5>予約完了</h5>
+                            {% else %}
+                                <h5>{{ i }}</h5>
+                            {% endif %}
+                        </td>
+
+                        {% if forloop.counter|divisibleby:"7" %}
+                            <tr>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <br>
     <div>
         <form action='{% url "go_to_calender" %}' method='GET' class='form'>
@@ -153,9 +195,25 @@
             <input type="hidden" name="day" value="{{ day }}">
             <input type="hidden" name="username" value="{{ user.username }}">
             <input type="hidden" name="delete" value="delete">
+
+            <div>取り消す日
+                <select name="del_day">
+                    <option value=0 selected>未選択</option>
+                    {% for i in month_days %}
+                        <option value={{ i }}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>取り消す時間帯
+                <select name="del_time">
+                    <option value=0 selected>未選択</option>
+                    {% for i in del_time_list %}
+                        <option value={{ i }}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <p>予約を取り消したい日と時間帯を選択してください</p>
             <button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
-            取り消す日(半角数字): <input type="text" name="del_day">
-            取り消す時間帯(半角数字): <input type="text" name="del_time">
         </form>
     </div>
 {% endif %}
