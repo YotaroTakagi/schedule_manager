@@ -411,7 +411,8 @@ def reservation(request):
 
                 if selected_i == "予約申請する":
                     time_reserve.append(time_i)
-                    valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i, day_condition="空き")
+                    valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i).exclude(
+                                                                                day_condition="予約不可")
                 else:
                     valid = []
                 valid = len(valid)
@@ -500,30 +501,35 @@ def reservation_host(request):
                     place_reserve.append("未定")
                     time_reserve.append(time_i)
 
-                valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i)
+                valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i,
+                                                         user_name=username)
                 valid = len(valid)
                 print(valid)
 
                 if valid != 0:
                     print("UPDATE")
-                    update = ScheduleCondition.objects.get(month=month, day=day, time=time_i)
+                    update = ScheduleCondition.objects.get(month=month, day=day, time=time_i,
+                                                           user_name=username)
                     update.user_name = username
                     update.day_condition = selected_i
                     update.place = place_i
                     update.save()
                 else:
                     print("CREATE")
-                    Sc = ScheduleCondition(month=month, day=day, day_condition=selected_i, place=place_i, time=time_i,
-                                           user_name=username)
+                    Sc = ScheduleCondition(month=month, day=day, day_condition=selected_i, place=place_i,
+                                           time=time_i, user_name=username)
                     Sc.save()
 
                 selected.append(selected_i)
                 place.append(place_i)
                 time.append(time_i)
+
         else:
             context = {}
             template = loader.get_template("schedule/error.html")
             return HttpResponse(template.render(context, request))
+    reservation_data = ScheduleCondition.objects.filter(month=month, user_name=username,
+                                                        day_condition="空き").order_by("created_at")
 
     context = {
         "day": day,
@@ -537,6 +543,7 @@ def reservation_host(request):
         "time_reserve_first": time_reserve[0][:5],
         "time_reserve_last": time_reserve[-1][-5:],
         "month_days": month_days,
+        "reservation_data": reservation_data,
     }
 
     return HttpResponse(template.render(context, request))
@@ -548,6 +555,7 @@ def sent(request):
     day = ""
     month = ""
     len_reserve_list = 0
+    reservation_data = None
 
     if request.method == 'POST':
         username = request.POST.get("username")
@@ -556,21 +564,31 @@ def sent(request):
         reservation_data = ScheduleCondition.objects.filter(day=day, month=month)
         reserve_list = list(reservation_data.values_list("time", flat=True))
 
-        print("LEN" ,len_reserve_list)
-        for i in reserve_list:
-            if request.POST.get(i) == i:
-                print("UPDATE")
-                del_data = ScheduleCondition.objects.get(day=day, month=month, time=i, day_condition="予約不可")
-                del_data.day_condition = "予約取り消し済み"
-                del_data.user_name = username
-                del_data.save()
-                break
+        if username == "yusuke":
+            for i in reserve_list:
+                if request.POST.get(i) == i:
+                    print("UPDATE")
+                    del_data = ScheduleCondition.objects.get(day=day, month=month, user_name=username,
+                                                             time=i, day_condition="空き")
+                    del_data.day_condition = "空き"
+                    del_data.user_name = username
+                    del_data.save()
+                    reservation_data = ScheduleCondition.objects.filter(month=month, user_name=username,
+                                                                        day_condition="空き")
+                    break
+        else:
+            for i in reserve_list:
+                if request.POST.get(i) == i:
+                    print("UPDATE")
+                    del_data = ScheduleCondition.objects.get(day=day, month=month, user_name=username, time=i, day_condition="予約不可")
+                    del_data.day_condition = "予約取り消し済み"
+                    del_data.user_name = username
+                    del_data.save()
+                    reservation_data = ScheduleCondition.objects.filter(day=day, month=month, user_name=username,
+                                                                        day_condition="予約不可")
+                    break
 
-        reservation_data = ScheduleCondition.objects.filter(day=day, month=month, user_name=username,
-                                                            day_condition="予約不可")
-        if reservation_data != 0:
-            reserve_list = list(reservation_data.values_list("time", flat=True))
-        len_reserve_list = len(reserve_list)
+        len_reserve_list = len(reservation_data)
 
     context = {
         "day": day,
@@ -578,6 +596,7 @@ def sent(request):
         "reserve_list": reserve_list,
         "current_time": current_time,
         "len_reserve_list": len_reserve_list,
+        "reservation_data": reservation_data,
     }
     return HttpResponse(template.render(context, request))
 

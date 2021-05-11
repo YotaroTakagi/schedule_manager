@@ -15,7 +15,9 @@
                 <th>月/日</th>
                 <th>時間帯</th>
                 <th>場所</th>
-                <th>予約の取り消し</th>
+                {% if user.username != "yusuke" %}
+                    <th>予約の取り消し</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -31,16 +33,18 @@
                         <td>
                             {{ i.place }}
                         </td>
-                        <td>
-                            <form action='{% url "sent" %}' method='POST'>
-                                {% csrf_token %}
-                                <input type="hidden" name="day" value="{{ day }}">
-                                <input type="hidden" name="month" value="{{ month }}">
-                                <input type="hidden" name="username" value="{{ user.username }}">
-                                <input type="hidden" name={{ i }} value={{ i }}>
-                                <button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
-                            </form>
-                        </td>
+                        {% if user.username != "yusuke" %}
+                            <td>
+                                <form action='{% url "sent" %}' method='POST'>
+                                    {% csrf_token %}
+                                    <input type="hidden" name="day" value="{{ i.day }}">
+                                    <input type="hidden" name="month" value="{{ i.month }}">
+                                    <input type="hidden" name="username" value="{{ user.username }}">
+                                    <input type="hidden" name={{ i.time }} value={{ i.time }}>
+                                    <button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
+                                </form>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             {% else %}
@@ -48,9 +52,5 @@
             {% endif %}
         </tbody>
     </table>
-
-
 </div>
-
-
 {% endblock %}

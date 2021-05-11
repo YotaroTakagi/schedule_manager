@@ -114,42 +114,43 @@
             </table>
         </div>
         <br>
-        {% if len_delete_list == 0 %}
-            <div class="text-center">
-                <h4>予約取り消しはありません</h4>
-            </div>
-        {% else %}
-            <div class="text-center">
-                <h4>予約取り消し一覧</h4>
-            </div>
-            <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                    <tr>
-                        <th class="text-center">ユーザー名</th>
-                        <th class="text-center">月</th>
-                        <th class="text-center">日</th>
-                        <th class="text-center">時間</th>
-                        <th class="text-center">場所</th>
-                        <th class="text-center">予約状況</th>
-                        <th class="text-center">登録日時</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        {% for i in delete_list %}
-                            <td class="text-center">
-                                {{ i }}
-                            </td>
-                            {% if forloop.counter|divisibleby:"7" %}
-                                <tr>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                </tbody>
-            </table>
-        {% endif %}
     {% endif %}
+    {% if len_delete_list == 0 %}
+        <div class="text-center">
+            <h4>予約取り消しはありません</h4>
+        </div>
+    {% else %}
+        <div class="text-center">
+            <h4>予約取り消し一覧</h4>
+        </div>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th class="text-center">ユーザー名</th>
+                    <th class="text-center">月</th>
+                    <th class="text-center">日</th>
+                    <th class="text-center">時間</th>
+                    <th class="text-center">場所</th>
+                    <th class="text-center">予約状況</th>
+                    <th class="text-center">登録日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for i in delete_list %}
+                        <td class="text-center">
+                            {{ i }}
+                        </td>
+                        {% if forloop.counter|divisibleby:"7" %}
+                            <tr>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+
 {% elif len_reservation_list_guest == 0 %}
     <div class="text-center">
         <h4>予約はありません</h4>
