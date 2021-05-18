@@ -7,7 +7,7 @@
         {% csrf_token %}
         <input type="hidden" name="username" value="{{ user.username }}">
         <input type="hidden" name="day" value="{{ day }}">
-        <div>時間
+        <div>&nbsp;&nbsp;時間
             <select name="start_time">
                 {% for i in time %}
                     <option value={{ i }}>{{ i }}時</option>
@@ -22,7 +22,7 @@
                 <option value=0 selected>未選択</option>
             </select>
         </div>
-        <div>場所
+        <div>&nbsp;&nbsp;場所
             <select name="place">
                 <option value="0">梅田</option>
                 <option value="1">難波</option>
@@ -32,8 +32,8 @@
                 <option value="5" selected>未選択</option>
             </select>
         </div>
-        <p>空きを探したい時間帯と場所を選択してください</p>
-        <button type="submit">検索する</button><p>※空きがあると、カレンダーの日付が緑色になります</p>
+        <p>&nbsp;&nbsp;空きを探したい時間帯と場所を選択してください</p>
+        &nbsp;<button type="submit">検索する</button><p>&nbsp;&nbsp;※空きがあると、カレンダーの日付が緑色になります</p>
     </form>
 </div>
 
@@ -44,13 +44,9 @@
     <table class="table table-bordered table-striped table-condensed">
         <thead>
             <tr>
-                <th class="text-center">月</th>
-                <th class="text-center">火</th>
-                <th class="text-center">水</th>
-                <th class="text-center">木</th>
-                <th class="text-center">金</th>
-                <th class="text-center">土</th>
-                <th class="text-center">日</th>
+                {% for i in week_list %}
+                    <th class="text-center">{{ i }}</th>
+                {% endfor %}
             </tr>
         </thead>
         <tbody>
@@ -68,6 +64,7 @@
                                 </tr>
                             {% endif %}
                             <input type="hidden" name="username" value="{{ user.username }}">
+                            <input type="hidden" name="next_bool" value="{{ next_bool }}">
                         </form>
                     </td>
                 {% endfor %}
@@ -75,6 +72,11 @@
         </tbody>
     </table>
 </div>
+<br>
+<form action='{% url "go_to_next_calendar" %}' method='GET' class='form'>
+    <input type="hidden" name="username" value="{{ user.username }}">
+    <button type='submit' class='btn btn-outline-primary'>次月の予約</button>
+</form>
 <br>
 {% if username == "yusuke" %}
     {% if len_reservation_list == 0 %}
@@ -197,7 +199,7 @@
             <input type="hidden" name="username" value="{{ user.username }}">
             <input type="hidden" name="delete" value="delete">
 
-            <div>取り消す日
+            <div>&nbsp;&nbsp;取り消す日
                 <select name="del_day">
                     <option value=0 selected>未選択</option>
                     {% for i in month_days %}
@@ -205,16 +207,16 @@
                     {% endfor %}
                 </select>
             </div>
-            <div>取り消す時間帯
+            <div>&nbsp;&nbsp;取り消す時間帯
                 <select name="del_time">
-                    <option value=0 selected>未選択</option>
+                    <option value=0 selected>&nbsp;未選択</option>
                     {% for i in del_time_list %}
                         <option value={{ i }}>{{ i }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <p>予約を取り消したい日と時間帯を選択してください</p>
-            <button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
+            <p>&nbsp;&nbsp;予約を取り消したい日と時間帯を選択してください</p>
+            &nbsp;<button type='submit' class='btn btn-outline-primary'>予約を取り消す</button>
         </form>
     </div>
 {% endif %}

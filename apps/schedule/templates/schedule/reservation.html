@@ -5,75 +5,151 @@
 <div class="text-center">
     <h4>予約申請画面(ゲスト)</h4>
 </div>
-<div class="text-center">
-    <h4>{{ month }}/{{ day }}の空き状況</h4>
-</div>
-<form action='{% url "reservation" %}' method='POST' class='form'>
-    {% csrf_token %}
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-condensed">
-            <thead>
-                <tr>
-                    <th>時間帯</th>
-                    <th>予約状況</th>
-                    <th>場所</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if data_len == 0 %}
-                    {% for x, i in data %}
-                        <tr>
-                            <td>
-                                {{ i.time }}
-                            </td>
-                            {% if i.day_condition == "空き" or i.day_condition == "予約取り消し済み" %}
+{% if next_bool == "0" %}
+
+    <div class="text-center">
+        <h4>{{ month }}/{{ day }}の空き状況</h4>
+    </div>
+    <form action='{% url "reservation" %}' method='POST' class='form'>
+        {% csrf_token %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>時間帯</th>
+                        <th>予約状況</th>
+                        <th>場所</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if data_len == 0 %}
+                        {% for x, i in data %}
+                            <tr>
                                 <td>
-                                    <select name={{ x }}>
-                                        <option value="2" selected>空き</option>
-                                        <option value="1">予約申請する</option>
-                                    </select>
+                                    {{ i.time }}
                                 </td>
-                            {% else %}
+                                {% if i.day_condition == "空き" or i.day_condition == "予約取り消し済み" %}
+                                    <td>
+                                        <select name={{ x }}>
+                                            <option value="2" selected>空き</option>
+                                            <option value="1">予約申請する</option>
+                                        </select>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <select name={{ x }}>
+                                            <option value="0" selected>予約不可</option>
+                                            <option value="1" disabled>予約申請する</option>
+                                        </select>
+                                    </td>
+                                {% endif %}
+                                {% if i.day_condition != "予約不可" %}
+                                    <td>
+                                        {{ i.place }}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        {% for x, i in make_data %}
+                            <tr>
+                                <td>
+                                    {{ i }}
+                                </td>
                                 <td>
                                     <select name={{ x }}>
                                         <option value="0" selected>予約不可</option>
                                         <option value="1" disabled>予約申請する</option>
                                     </select>
                                 </td>
-                            {% endif %}
-                            {% if i.day_condition != "予約不可" %}
-                                <td>
-                                    {{ i.place }}
-                                </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    {% for x, i in make_data %}
-                        <tr>
-                            <td>
-                                {{ i }}
-                            </td>
-                            <td>
-                                <select name={{ x }}>
-                                    <option value="0" selected>予約不可</option>
-                                    <option value="1" disabled>予約申請する</option>
-                                </select>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
-            </tbody>
-        </table>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <input type="hidden" name="day" value="{{ day }}">
+        <input type="hidden" name="month" value="{{ month }}">
+        <input type="hidden" name="username" value="{{ user.username }}">
+        <input type="hidden" name="next_bool" value="{{ next_bool }}">
+        &nbsp;予約パスワード : <input type="text" name="pass">
+        <br>
+        <br>
+        &nbsp;<button type='submit' class='btn btn-outline-primary'>予約申請する(確認画面へ飛ぶ)</button>
+    </form>
+{% else %}
+    <div class="text-center">
+        <h4>{{ next_month }}/{{ day }}の空き状況</h4>
     </div>
-    <br>
-    <input type="hidden" name="day" value="{{ day }}">
-    <input type="hidden" name="month" value="{{ month }}">
-    <input type="hidden" name="username" value="{{ user.username }}">
-    予約パスワード : <input type="text" name="pass">
-    <br>
-    <br>
-    <button type='submit' class='btn btn-outline-primary'>予約申請する(確認画面へ飛ぶ)</button>
-</form>
-
+    <form action='{% url "reservation" %}' method='POST' class='form'>
+        {% csrf_token %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>時間帯</th>
+                        <th>予約状況</th>
+                        <th>場所</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if next_data_len == 0 %}
+                        {% for x, i in next_data %}
+                            <tr>
+                                <td>
+                                    {{ i.time }}
+                                </td>
+                                {% if i.day_condition == "空き" or i.day_condition == "予約取り消し済み" %}
+                                    <td>
+                                        <select name={{ x }}>
+                                            <option value="2" selected>空き</option>
+                                            <option value="1">予約申請する</option>
+                                        </select>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <select name={{ x }}>
+                                            <option value="0" selected>予約不可</option>
+                                            <option value="1" disabled>予約申請する</option>
+                                        </select>
+                                    </td>
+                                {% endif %}
+                                {% if i.day_condition != "予約不可" %}
+                                    <td>
+                                        {{ i.place }}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        {% for x, i in next_make_data %}
+                            <tr>
+                                <td>
+                                    {{ i }}
+                                </td>
+                                <td>
+                                    <select name={{ x }}>
+                                        <option value="0" selected>予約不可</option>
+                                        <option value="1" disabled>予約申請する</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <input type="hidden" name="day" value="{{ day }}">
+        <input type="hidden" name="month" value="{{ next_month }}">
+        <input type="hidden" name="username" value="{{ user.username }}">
+        <input type="hidden" name="next_bool" value="{{ next_bool }}">
+        &nbsp;予約パスワード : <input type="text" name="pass">
+        <br>
+        <br>
+        &nbsp;<button type='submit' class='btn btn-outline-primary'>予約申請する(確認画面へ飛ぶ)</button>
+    </form>
+{% endif %}
+<br>
 {% endblock %}
