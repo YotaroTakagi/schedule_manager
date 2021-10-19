@@ -55,9 +55,9 @@
                     <td class="text-center">
                         <form action="/calender/" method="GET">
                             {% if i == "place" %}
-                                <button style="width:30px;padding:3px;background-color:green" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
+                                <button style="width:40px;padding:3px;background-color:green" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
                             {% else %}
-                                <button style="width:30px;padding:3px" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
+                                <button style="width:40px;padding:3px" name="day" value={{ forloop.counter }}>{{ forloop.counter }}</button>
                             {% endif %}
                             {% if forloop.counter|divisibleby:"7" %}
                                 <tr>

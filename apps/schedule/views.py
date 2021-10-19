@@ -1,17 +1,10 @@
 import calendar
-from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-from .models import Group
-from django.views import generic
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate
-from django.views.generic import CreateView
-from .forms import UserCreateForm, ScheduleForm, ScheduleCondition
-from .models import UserName, ScheduleCondition
-from django.views import View
+from .forms import ScheduleForm, ScheduleCondition
+from .models import ScheduleCondition
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 #render テンプレートをロードし、コンテキストに値を入れる。
@@ -433,10 +426,11 @@ def reservation(request):
             if next_bool == "0":
                 day = request.POST.get("day")
                 context["day"] = day
+                """
                 scheduleForm = ScheduleForm(request.POST)
                 if scheduleForm.is_valid():
                     scheduleForm.save()
-
+                """
                 for i in range(1, 31):
                     if request.POST.get(str(i)) == "0":
                         selected_i = "予約不可"
@@ -450,19 +444,20 @@ def reservation(request):
                                                                   (start_time + timedelta(minutes=i * 30)).hour,
                                                                   (start_time + timedelta(minutes=i * 30)).minute)
 
+                    print("TTEESSTT", request.POST.get(str(i)))
                     if selected_i == "予約申請する":
                         time_reserve.append(time_i)
                         valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i).exclude(
                                                                                      day_condition="予約不可")
                         if ScheduleCondition.objects.get(month=month, day=day, time=time_i).day_condition == "予約不可":
-                            context = {"update_num": update_num ,}
+                            context = {"update_num": update_num, }
                             template = loader.get_template("schedule/error.html")
                             return HttpResponse(template.render(context, request))
                     else:
-                        valid = []
-                    valid = len(valid)
-
-                    if valid != 0:
+                        valid = None
+                    #valid = len(valid)
+                    #print("LEN", valid)
+                    if valid is not None:
                         print("UPDATE")
                         update_num += 1
                         update = ScheduleCondition.objects.get(month=month, day=day, time=time_i)
@@ -503,10 +498,10 @@ def reservation(request):
                             template = loader.get_template("schedule/error.html")
                             return HttpResponse(template.render(context, request))
                     else:
-                        valid = []
-                    valid = len(valid)
+                        valid = None
+                    #valid = len(valid)
 
-                    if valid != 0:
+                    if valid is not None:
                         print("UPDATE")
                         update_num += 1
                         update = ScheduleCondition.objects.get(month=next_month, day=day, time=time_i)
@@ -519,6 +514,11 @@ def reservation(request):
                     context[str(selected_i)] = selected_i
 
         else:
+            context = {}
+            template = loader.get_template("schedule/error.html")
+            return HttpResponse(template.render(context, request))
+
+        if len(time_reserve) == 0:
             context = {}
             template = loader.get_template("schedule/error.html")
             return HttpResponse(template.render(context, request))
@@ -555,6 +555,7 @@ def reservation_host(request):
     place = []
     time = []
     day = ""
+    schedule_form = ScheduleForm()
     month = datetime.now().month
     place_reserve = []
     time_reserve = []
@@ -571,7 +572,6 @@ def reservation_host(request):
                 scheduleForm = ScheduleForm(request.POST)
                 if scheduleForm.is_valid():
                     scheduleForm.save()
-
                 for i in range(1, 31):
                     if request.POST.get(str(i)) == "0":
                         selected_i = "予約不可"
@@ -606,12 +606,13 @@ def reservation_host(request):
                         place_reserve.append("未定")
                         time_reserve.append(time_i)
 
-                    valid = ScheduleCondition.objects.filter(month=month, day=day, time=time_i,
-                                                             user_name=username)
-                    valid = len(valid)
-                    print(valid)
+                    #予約データがあるかどうか(ホスト、ゲストどちらも含む)
+                    valid_host = ScheduleCondition.objects.filter(month=month, day=day, time=time_i,
+                                                                  user_name=username)
+                    valid_guest = ScheduleCondition.objects.filter(month=month, day=day, time=time_i).exclude(
+                                                                    user_name=username)
 
-                    if valid != 0:
+                    if valid_host:
                         print("UPDATE")
                         update = ScheduleCondition.objects.get(month=month, day=day, time=time_i,
                                                                user_name=username)
@@ -620,6 +621,8 @@ def reservation_host(request):
                         update.place = place_i
                         update.created_at = datetime.now()
                         update.save()
+                    elif valid_guest:
+                        pass
                     else:
                         print("CREATE")
                         Sc = ScheduleCondition(month=month, day=day, day_condition=selected_i, place=place_i,
@@ -631,9 +634,6 @@ def reservation_host(request):
                     time.append(time_i)
             # next_bool==1
             else:
-                scheduleForm = ScheduleForm(request.POST)
-                if scheduleForm.is_valid():
-                    scheduleForm.save()
 
                 for i in range(1, 31):
                     if request.POST.get(str(i)) == "0":
